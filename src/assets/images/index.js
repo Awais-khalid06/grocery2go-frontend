@@ -1,0 +1,19 @@
+export {default as FruitsImage} from './fruits-bg.png';
+export {default as ColorFruitsImage} from './color-fruits-bg.png';
+export {default as ShopImage} from './shop.png';
+export {default as AppleImage} from './apple.png';
+export {default as ColoredMaskImage} from './colored-mask.png';
+export {default as AvatarImage} from './avatar.png';
+export {default as StarFilledImage} from './star-filled.png';
+export {default as FruitPrimaryImage} from './fruit-primary.png';
+
+export {default as VegetablesImage} from './vegetables.png';
+export {default as TissuesImage} from './tissues.png';
+export {default as TabletsImage} from './tablets.png';
+export {default as ShopProductsImage} from './shop-products.png';
+export {default as MeatImage} from './meat.png';
+export {default as FrozenMeatImage} from './frozen-meat.png';
+export {default as LiquidsImage} from './liquids.png';
+export {default as DairyImage} from './dairy.png';
+export {default as BreadsImage} from './breads.png';
+export {default as BottlesImage} from './bottles.png';
