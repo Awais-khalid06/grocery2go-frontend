@@ -4,7 +4,7 @@ import {PersistGate} from 'redux-persist/integration/react';
 import store from './src/redux/store';
 import {persistStore} from 'redux-persist';
 import Routes from './src/routes';
-import {StatusBar} from 'react-native';
+import {LogBox, StatusBar} from 'react-native';
 import {StripeProvider} from '@stripe/stripe-react-native';
 import SocketContext from './src/context/context/socketContext';
 import {SOCKET_BASE_URL} from './src/network/Environment';
@@ -13,17 +13,7 @@ import io from 'socket.io-client';
 const persistor = persistStore(store);
 
 if (__DEV__) {
-  const ignoreWarns = ['VirtualizedLists should never be nested inside plain ScrollViews'];
-
-  const errorWarn = global.console.error;
-  global.console.error = (...arg) => {
-    for (const error of ignoreWarns) {
-      if (arg[0].startsWith(error)) {
-        return;
-      }
-    }
-    errorWarn(...arg);
-  };
+  LogBox.ignoreLogs(['VirtualizedLists should never be nested inside plain ScrollViews']);
 }
 
 const socket = io(SOCKET_BASE_URL);
