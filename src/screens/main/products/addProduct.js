@@ -97,16 +97,22 @@ const AddProduct = ({navigation, route}) => {
 
     ShowMessage('Product will be uploaded soon');
     navigation.goBack();
+    let images = [];
+    try {
+      images = await Promise.all(
+        productImages.map(async img => {
+          if (img.fileName) {
+            return await uploadImageToS3(formatedS3Files(img));
+          }
 
-    const images = await Promise.all(
-      productImages.map(async img => {
-        if (img.fileName) {
-          return await uploadImageToS3(formatedS3Files(img));
-        }
-
-        return img.uri;
-      }),
-    );
+          return img.uri;
+        }),
+      );
+    } catch (error) {
+      ShowMessage(error?.message || 'Unable to upload product images.');
+      console.log('Add product image upload error:', error);
+      return;
+    }
 
     let formatedData = {productImages: images};
 

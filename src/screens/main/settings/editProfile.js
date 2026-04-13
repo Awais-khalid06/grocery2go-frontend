@@ -1,6 +1,6 @@
 import {View, Image, Pressable} from 'react-native';
 import React, {useState} from 'react';
-import {AppButton, AppScrollView, AppTextInput, Header, Loader, Screen} from '../../../components';
+import {AppButton, AppScrollView, AppTextInput, Header, Loader, Screen, ShowMessage} from '../../../components';
 import {CameraPrimaryIcon, UserAvatarIcon} from '../../../assets/icons';
 import {profileStyles} from '../styles';
 import globalStyles from '../../../../globalStyles';
@@ -47,31 +47,37 @@ const EditProfile = ({navigation}) => {
 
   const handleSaveChanges = async () => {
     setIsLoading(true);
+    const formData = {...data};
 
-    if (typeof data.image === 'object' && data.image?.uri) {
-      const file = {
-        uri: data.image.uri,
-        name: `file${Math.floor(Math.random() * 1034343438347)}`,
-        type: data.image.type,
-      };
-      data.image = await uploadImageToS3(file);
-    }
+    try {
+      if (typeof formData.image === 'object' && formData.image?.uri) {
+        const file = {
+          uri: formData.image.uri,
+          name: `file${Math.floor(Math.random() * 1034343438347)}`,
+          type: formData.image.type,
+        };
+        formData.image = await uploadImageToS3(file);
+      }
 
-    if (isGroceryOwner) {
-      await commonAPI.updateOwnerProfile(data, dispatch);
+      if (isGroceryOwner) {
+        await commonAPI.updateOwnerProfile(formData, dispatch);
+        navigation.goBack();
+
+        return;
+      }
+
+      const response = await commonAPI.updateUserProfile(formData);
+
+      if (response.success) {
+        const user = response.data.user;
+        if (user) dispatch(authActions.setUser(user));
+        navigation.goBack();
+      }
+    } catch (error) {
+      ShowMessage(error?.message || 'Unable to upload image. Please try again.');
+      console.log('Edit profile save error:', error);
+    } finally {
       setIsLoading(false);
-      navigation.goBack();
-
-      return;
-    }
-
-    const response = await commonAPI.updateUserProfile(data);
-    setIsLoading(false);
-
-    if (response.success) {
-      const user = response.data.user;
-      if (user) dispatch(authActions.setUser(user));
-      navigation.goBack();
     }
   };
 

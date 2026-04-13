@@ -1,7 +1,7 @@
 import {View, Pressable, Image} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import FruitsColorBackgroundWrapper from '../common/fruitsColorBackgroundWrapper';
-import {AppButton, AppScrollView, AppText, AppTextInput, Header, Loader, Screen} from '../../../components';
+import {AppButton, AppScrollView, AppText, AppTextInput, Header, Loader, Screen, ShowMessage} from '../../../components';
 import {signUpStyles} from '../styles';
 import {FONTS} from '../../../utils/theme';
 import {CameraPrimaryIcon, ChevronIcon, UserAvatarIcon} from '../../../assets/icons';
@@ -121,6 +121,8 @@ const CompleteProfile = ({navigation, route}) => {
       updateProfileAPI(formatedData);
     } catch (error) {
       console.log(error);
+      ShowMessage(error?.message || 'Unable to upload image. Please try again.');
+      setIsLoading(false);
     }
   };
 

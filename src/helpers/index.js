@@ -8,6 +8,7 @@ import dayjs from 'dayjs';
 import Geocoder from 'react-native-geocoder-reborn';
 import { ROUTES } from '../utils/constants';
 import messaging, { firebase } from '@react-native-firebase/messaging';
+import { ShowMessage } from '../components';
 var fs = require('react-native-fs');
 const { width, height } = Dimensions.get('window');
 var relativeTime = require('dayjs/plugin/relativeTime');
@@ -44,21 +45,28 @@ export const imagePickerFromGallery = async ({ selectionLimit = 1, mediaType = '
 export const onAPIError = error => console.log('ERROR > ', error);
 
 export const FCM = async () => {
-  const enabled = await firebase.messaging().hasPermission();
-  if (!enabled) {
-    try {
-      await firebase.messaging().requestPermission();
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  try {
+    await messaging().registerDeviceForRemoteMessages();
 
-  const fcmToken = await firebase.messaging().getToken();
-  console.log('FCM ---->>>> ', fcmToken);
-  if (fcmToken) {
-    return fcmToken;
-  } else {
-    console.warn('no token');
+    const enabled = await firebase.messaging().hasPermission();
+    if (!enabled) {
+      try {
+        await firebase.messaging().requestPermission();
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    const fcmToken = await firebase.messaging().getToken();
+    console.log('FCM ---->>>> ', fcmToken);
+    if (fcmToken) {
+      return fcmToken;
+    } else {
+      console.warn('no token');
+      return 'No FCM Found!';
+    }
+  } catch (error) {
+    console.log('FCM ERROR ---->>>> ', error);
     return 'No FCM Found!';
   }
 };
@@ -76,11 +84,20 @@ export const authStateUpdateInRedux = (data = {}) => {
 };
 
 export const uploadImageToS3 = async file => {
+  const accessKeyId = process.env.AWS_ACCESS_KEY_ID || 'AKIA6PMLMQABMN4NQXE7';
+  const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY || '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';
+  const bucket = process.env.AWS_S3_BUCKET || 'grocery2go-s3-bucket';
+
+  if (!accessKeyId || !secretAccessKey || !bucket) {
+    throw new Error('Missing AWS S3 config. Set AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY and AWS_S3_BUCKET.');
+  }
+
   const s3bucket = new S3({
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    Bucket: process.env.AWS_S3_BUCKET,
+    accessKeyId,
+    secretAccessKey,
+    Bucket: bucket,
     signatureVersion: 'v4',
+    region: 'us-east-1',
   });
 
   let contentType = file.type;
@@ -91,7 +108,7 @@ export const uploadImageToS3 = async file => {
   return new Promise((resolve, reject) => {
     s3bucket.createBucket(() => {
       const params = {
-        Bucket: process.env.AWS_S3_BUCKET,
+        Bucket: bucket,
         Key: file.name,
         Body: arrayBuffer,
         ContentDisposition: contentDeposition,
