@@ -1,8 +1,9 @@
 import React from 'react';
-import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
-import {COLORS, FONTS} from '../../utils/theme';
-import {LocationGrayIcon} from '../../assets/icons';
-import {StyleSheet} from 'react-native';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import { COLORS, FONTS } from '../../utils/theme';
+import { LocationGrayIcon } from '../../assets/icons';
+import { StyleSheet } from 'react-native';
+import { GOOGLE_API_KEY } from '../../network/Environment';
 
 const GooglePlacesInput = ({
   onSelect,
@@ -43,7 +44,7 @@ const GooglePlacesInput = ({
       }}
       onPress={(data, details = null) => onSelect?.(data, details)}
       query={{
-        key: 'AIzaSyDgV6iD-c7l49_1CJHniPUJlfQQSK6tofU',
+        key: GOOGLE_API_KEY,
         location: `${region.latitude}, ${region.longitude}`,
       }}
       styles={{
@@ -60,18 +61,18 @@ const GooglePlacesInput = ({
 };
 
 const styles = StyleSheet.create({
-  container: {zIndex: 1},
+  container: { zIndex: 1 },
   listView: {
     backgroundColor: COLORS.white,
     overflow: 'hidden',
     paddingRight: 10,
     shadowColor: COLORS.black,
     elevation: 1,
-    shadowOffset: {width: -2, height: 4},
+    shadowOffset: { width: -2, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
   },
-  textInputContainer: {alignItems: 'center', height: 45},
+  textInputContainer: { alignItems: 'center', height: 45 },
   textInput: {
     width: '100%',
     paddingLeft: 38,
@@ -86,8 +87,8 @@ const styles = StyleSheet.create({
     fontSize: 12,
     height: 45,
   },
-  searchIcon: {position: 'absolute', zIndex: 2, marginLeft: 10},
-  listDescription: {color: COLORS.black, fontFamily: FONTS.regular},
+  searchIcon: { position: 'absolute', zIndex: 2, marginLeft: 10 },
+  listDescription: { color: COLORS.black, fontFamily: FONTS.regular },
 });
 
 export default GooglePlacesInput;

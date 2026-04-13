@@ -3,7 +3,8 @@ export const BASE_URL = 'http://ec2-3-87-102-186.compute-1.amazonaws.com/api/v1/
 export const SOCKET_BASE_URL = 'http://ec2-3-87-102-186.compute-1.amazonaws.com/';
 
 export const IMAGE_BASE_URL = '';
-export const GOOGLE_API_KEY = '';
+// export const GOOGLE_API_KEY = 'AIzaSyDgV6iD-c7l49_1CJHniPUJlfQQSK6tofU';
+export const GOOGLE_API_KEY = 'AIzaSyDdLnKDZKRKwWROK9yTbwzttsmPCM8CyF0';
 
 export const API = {
   sendOTP: 'user/sendOTP',
