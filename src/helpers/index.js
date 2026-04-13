@@ -1,15 +1,15 @@
-import {Alert, Dimensions, Linking, PermissionsAndroid, Platform} from 'react-native';
-import {getDeviceId} from 'react-native-device-info';
-import {launchImageLibrary, launchCamera} from 'react-native-image-picker';
-import {authActions} from '../redux/slices/auth';
-import {decode} from 'base64-arraybuffer';
-import {S3} from 'aws-sdk';
+import { Alert, Dimensions, Linking, PermissionsAndroid, Platform } from 'react-native';
+import { getDeviceId } from 'react-native-device-info';
+import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
+import { authActions } from '../redux/slices/auth';
+import { decode } from 'base64-arraybuffer';
+import { S3 } from 'aws-sdk';
 import dayjs from 'dayjs';
 import Geocoder from 'react-native-geocoder-reborn';
-import {ROUTES} from '../utils/constants';
-import messaging, {firebase} from '@react-native-firebase/messaging';
+import { ROUTES } from '../utils/constants';
+import messaging, { firebase } from '@react-native-firebase/messaging';
 var fs = require('react-native-fs');
-const {width, height} = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 var relativeTime = require('dayjs/plugin/relativeTime');
 dayjs.extend(relativeTime);
 
@@ -18,12 +18,12 @@ export const hp = p => height * (p / 100);
 
 export const isIOS = Platform.OS === 'ios';
 
-export const imagePickerFromGallery = async ({selectionLimit = 1, mediaType = 'photo', isCamera} = {}) => {
+export const imagePickerFromGallery = async ({ selectionLimit = 1, mediaType = 'photo', isCamera } = {}) => {
   try {
     let response = {};
 
-    if (isCamera) response = await launchCamera({selectionLimit});
-    else response = await launchImageLibrary({selectionLimit, mediaType});
+    if (isCamera) response = await launchCamera({ selectionLimit });
+    else response = await launchImageLibrary({ selectionLimit, mediaType });
 
     let assets = [];
 
@@ -64,11 +64,11 @@ export const FCM = async () => {
 };
 
 export const getDeviceIdAndFCM = async () => {
-  return {id: getDeviceId(), deviceToken: await FCM()};
+  return { id: getDeviceId(), deviceToken: await FCM() };
 };
 
 export const authStateUpdateInRedux = (data = {}) => {
-  const {token, refreshToken, user, dispatch} = data;
+  const { token, refreshToken, user, dispatch } = data;
 
   if (token) dispatch(authActions.setAccessToken(token));
   if (refreshToken) dispatch(authActions.setRefreshToken(refreshToken));
@@ -79,7 +79,7 @@ export const uploadImageToS3 = async file => {
   const s3bucket = new S3({
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    Bucket: process.env.AWS_S3_BUCKET || 'grocery2gobucket',
+    Bucket: process.env.AWS_S3_BUCKET,
     signatureVersion: 'v4',
   });
 
@@ -91,7 +91,7 @@ export const uploadImageToS3 = async file => {
   return new Promise((resolve, reject) => {
     s3bucket.createBucket(() => {
       const params = {
-        Bucket: 'grocery2gobucket',
+        Bucket: process.env.AWS_S3_BUCKET,
         Key: file.name,
         Body: arrayBuffer,
         ContentDisposition: contentDeposition,
@@ -119,15 +119,15 @@ export const getUserFullName = (first, last) => {
 export const confirmationAlert = (message, cancelBtnText, okayBtnText) => {
   return new Promise((resolve, reject) => {
     Alert.alert('Confirm', message, [
-      {text: cancelBtnText || 'Cancel', onPress: () => resolve(false)},
-      {text: okayBtnText || 'Ok', onPress: () => resolve(true)},
+      { text: cancelBtnText || 'Cancel', onPress: () => resolve(false) },
+      { text: okayBtnText || 'Ok', onPress: () => resolve(true) },
     ]);
   });
 };
 
 export const commonAlert = (title, message) => {
   return new Promise((resolve, reject) => {
-    Alert.alert(title, message, [{text: 'Ok', onPress: () => resolve(true)}]);
+    Alert.alert(title, message, [{ text: 'Ok', onPress: () => resolve(true) }]);
   });
 };
 
@@ -164,15 +164,15 @@ export const getFromNowTime = date => {
 
 export const getLocationNameFromLatLng = async (lat, lng) => {
   try {
-    const res = await Geocoder.geocodePosition({lat, lng});
+    const res = await Geocoder.geocodePosition({ lat, lng });
     return res[0].formattedAddress;
   } catch (error) {
     console.log('Reverse gecode error: ', error);
   }
 };
 
-export const navigateToChatRoom = ({navigation, inboxId}) => {
-  navigation.navigate(ROUTES.ChatRoom, {inboxId});
+export const navigateToChatRoom = ({ navigation, inboxId }) => {
+  navigation.navigate(ROUTES.ChatRoom, { inboxId });
 };
 
 export const requestNotificationPermission = async () => {
@@ -188,10 +188,10 @@ export const requestNotificationPermission = async () => {
   }
 };
 
-export const moveToExternalMap = ({lat, lng, label}) => {
+export const moveToExternalMap = ({ lat, lng, label }) => {
   if (!lat || !lng) return;
 
-  const scheme = Platform.select({ios: 'maps://0,0?q=', android: 'geo:0,0?q='});
+  const scheme = Platform.select({ ios: 'maps://0,0?q=', android: 'geo:0,0?q=' });
   const latLng = `${lat},${lng}`;
   const url = Platform.select({
     ios: `${scheme}${label}@${latLng}`,

@@ -1,11 +1,6 @@
-// DEVELOPMENT
-// export const BASE_URL = 'http://192.168.100.38:3000/api/v1/';
-// export const BASE_URL = 'http://ec2-51-20-136-194.eu-north-1.compute.amazonaws.com/api/v1/';
-// export const SOCKET_BASE_URL = 'http://ec2-51-20-136-194.eu-north-1.compute.amazonaws.com';
-
 // PRODUCTION
-export const BASE_URL = 'http://ec2-54-215-66-55.us-west-1.compute.amazonaws.com/api/v1/';
-export const SOCKET_BASE_URL = 'http://ec2-54-215-66-55.us-west-1.compute.amazonaws.com/';
+export const BASE_URL = 'http://ec2-3-87-102-186.compute-1.amazonaws.com/api/v1/';
+export const SOCKET_BASE_URL = 'http://ec2-3-87-102-186.compute-1.amazonaws.com/';
 
 export const IMAGE_BASE_URL = '';
 export const GOOGLE_API_KEY = '';
