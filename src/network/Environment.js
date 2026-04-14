@@ -4,7 +4,7 @@ export const SOCKET_BASE_URL = 'http://ec2-3-87-102-186.compute-1.amazonaws.com/
 
 export const IMAGE_BASE_URL = '';
 // export const GOOGLE_API_KEY = 'AIzaSyDgV6iD-c7l49_1CJHniPUJlfQQSK6tofU';
-export const GOOGLE_API_KEY = 'AIzaSyDdLnKDZKRKwWROK9yTbwzttsmPCM8CyF0';
+export const GOOGLE_API_KEY = 'AlzaSyCJ65P5-1Tf_xwj4sSb3pvQvOrOeR1s2jY';
 
 export const API = {
   sendOTP: 'user/sendOTP',

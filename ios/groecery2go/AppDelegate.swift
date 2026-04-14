@@ -16,7 +16,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
-     if let MAPS_API_KEY = Bundle.main.object(forInfoDictionaryKey: "AIzaSyDdLnKDZKRKwWROK9yTbwzttsmPCM8CyF0") as? String {
+     if let MAPS_API_KEY = Bundle.main.object(forInfoDictionaryKey: "AlzaSyCJ65P5-1Tf_xwj4sSb3pvQvOrOeR1s2jY") as? String {
              GMSServices.provideAPIKey(MAPS_API_KEY)
     }
 
