@@ -1,13 +1,13 @@
 import React from 'react';
-import {Provider} from 'react-redux';
-import {PersistGate} from 'redux-persist/integration/react';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
 import store from './src/redux/store';
-import {persistStore} from 'redux-persist';
+import { persistStore } from 'redux-persist';
 import Routes from './src/routes';
-import {LogBox, StatusBar} from 'react-native';
-import {StripeProvider} from '@stripe/stripe-react-native';
+import { LogBox, StatusBar } from 'react-native';
+import { StripeProvider } from '@stripe/stripe-react-native';
 import SocketContext from './src/context/context/socketContext';
-import {SOCKET_BASE_URL} from './src/network/Environment';
+import { SOCKET_BASE_URL, STRIPE_PUBLISHABLE_KEY } from './src/network/Environment';
 import io from 'socket.io-client';
 
 const persistor = persistStore(store);
@@ -22,7 +22,7 @@ const App = () => {
   return (
     <Provider store={store}>
       <StripeProvider
-        publishableKey="pk_test_51QHRs0GMVBLfy88500Bkv9kjZY3OnnSC7J9zijKpZwmvEVaCreOPML04xgNOZ6O9EQfOoWOBVzhs4kK0dTxH46eJ00HfHf3Sf5"
+        publishableKey={STRIPE_PUBLISHABLE_KEY}
         urlScheme="https://dashboard.stripe.com/test/dashboard" // required for 3D Secure and bank redirects
         merchantIdentifier="merchant.com.grocery2go" // required for Apple Pay
       >
