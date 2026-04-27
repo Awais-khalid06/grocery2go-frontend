@@ -82,9 +82,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.groecery2go"
+    namespace "com.grocery2go.app"
     defaultConfig {
-        applicationId "com.groecery2go"
+        applicationId "com.grocery2go.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

@@ -1,10 +1,10 @@
-import {GoogleSignin, statusCodes} from '@react-native-google-signin/google-signin';
+import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 // import {appleAuth} from '@invertase/react-native-apple-authentication';
 
 export const GoogleSignIn = async () => {
   GoogleSignin.configure({
     scopes: ['email'],
-    webClientId: '497009299999-rhadfitgujutu8dql5vv4luttbmcbsr3.apps.googleusercontent.com',
+    webClientId: '608307830800-2nnfdruk0ql60bmnjvqrc67h87hl427r.apps.googleusercontent.com',
     offlineAccess: true,
     forceCodeForRefreshToken: true,
     profileImageSize: 120,

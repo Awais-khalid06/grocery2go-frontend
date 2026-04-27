@@ -3,23 +3,21 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>497009299999-mt520qudgqqn5nial5lufbdtt834qtv7.apps.googleusercontent.com</string>
+	<string>608307830800-4r3bf6t0kqhcg2gksek4t0l24421ere7.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.497009299999-mt520qudgqqn5nial5lufbdtt834qtv7</string>
-	<key>ANDROID_CLIENT_ID</key>
-	<string>497009299999-e5rpcmhd2eb0d75jk3hvogc9ippamkc4.apps.googleusercontent.com</string>
+	<string>com.googleusercontent.apps.608307830800-4r3bf6t0kqhcg2gksek4t0l24421ere7</string>
 	<key>API_KEY</key>
-	<string>AIzaSyD79Y6g7T3wTxcITMgq_BU8zDktgaKobc8</string>
+	<string>AIzaSyBihl9w-mChBakeiNFSb2DYO6QLvED6Lvk</string>
 	<key>GCM_SENDER_ID</key>
-	<string>497009299999</string>
+	<string>608307830800</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>org.reactjs.native.example.groecery2go</string>
+	<string>com.grocery2go.app</string>
 	<key>PROJECT_ID</key>
-	<string>grocery2go-ad6ce</string>
+	<string>grocery2-app</string>
 	<key>STORAGE_BUCKET</key>
-	<string>grocery2go-ad6ce.appspot.com</string>
+	<string>grocery2-app.firebasestorage.app</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -31,6 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:497009299999:ios:aebec933f6a1a94c4b7b2a</string>
+	<string>1:608307830800:ios:ec895533d8d8b7504d6a95</string>
 </dict>
 </plist>

@@ -1,42 +1,65 @@
 {
   "project_info": {
-    "project_number": "497009299999",
-    "project_id": "grocery2go-ad6ce",
-    "storage_bucket": "grocery2go-ad6ce.appspot.com"
+    "project_number": "608307830800",
+    "project_id": "grocery2-app",
+    "storage_bucket": "grocery2-app.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:497009299999:android:b4ef9c977677ba9e4b7b2a",
+        "mobilesdk_app_id": "1:608307830800:android:b98144efb1c27b6c4d6a95",
         "android_client_info": {
-          "package_name": "com.groecery2go"
+          "package_name": "com.grocery2go.app"
         }
       },
       "oauth_client": [
         {
-          "client_id": "497009299999-e5rpcmhd2eb0d75jk3hvogc9ippamkc4.apps.googleusercontent.com",
+          "client_id": "608307830800-1aoetroc7j59mijm2h7s3e60tugildak.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.groecery2go",
+            "package_name": "com.grocery2go.app",
+            "certificate_hash": "e96c55f96396ac47ea496ae353151e9ff4f5277b"
+          }
+        },
+        {
+          "client_id": "608307830800-i2rdjclcicmnj1at8fpgve3ftm0p5icl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.grocery2go.app",
             "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
           }
         },
         {
-          "client_id": "497009299999-rhadfitgujutu8dql5vv4luttbmcbsr3.apps.googleusercontent.com",
+          "client_id": "608307830800-vaagicc87ldtdovdmefa222b5251oohk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.grocery2go.app",
+            "certificate_hash": "592be3547a08f015d4280ad521fac756e70c950f"
+          }
+        },
+        {
+          "client_id": "608307830800-2nnfdruk0ql60bmnjvqrc67h87hl427r.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyACg3nuMVYsSbu4WEacYQVXo2mIybaVMpY"
+          "current_key": "AIzaSyA9xQy_ZP238NonvsMxyX0DhX3AQ1BpHW8"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "497009299999-rhadfitgujutu8dql5vv4luttbmcbsr3.apps.googleusercontent.com",
+              "client_id": "608307830800-2nnfdruk0ql60bmnjvqrc67h87hl427r.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "608307830800-4r3bf6t0kqhcg2gksek4t0l24421ere7.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.grocery2go.app"
+              }
             }
           ]
         }

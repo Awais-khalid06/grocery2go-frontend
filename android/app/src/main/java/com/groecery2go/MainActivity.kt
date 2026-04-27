@@ -1,4 +1,4 @@
-package com.groecery2go
+package com.grocery2go.app
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
