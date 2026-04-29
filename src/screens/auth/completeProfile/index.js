@@ -1,4 +1,4 @@
-import {View, Pressable, Image} from 'react-native';
+import {View, Pressable, Image, KeyboardAvoidingView, Platform} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import FruitsColorBackgroundWrapper from '../common/fruitsColorBackgroundWrapper';
 import {AppButton, AppScrollView, AppText, AppTextInput, Header, Loader, Screen, ShowMessage} from '../../../components';
@@ -66,6 +66,7 @@ const CompleteProfile = ({navigation, route}) => {
       setAccountNumber(data?.bankAccountInfo?.bankAccountId);
       setBankName(data?.bankAccountInfo?.bankName);
       setSalesTax(data?.salesTax.toString());
+      if (data?.country) setCountryValue(data.country);
     };
     const shopId = user.shopId;
     callApi(API_METHODS.GET, `${API.getMyShop}${shopId}`, null, onSuccess, onAPIError, setIsLoading);
@@ -77,11 +78,18 @@ const CompleteProfile = ({navigation, route}) => {
   };
 
   const handleConfirm = async () => {
+    const trimmedAddress = region?.name?.trim?.() || '';
+    const trimmedCountry = countryValue?.trim?.() || '';
+    const trimmedVehiclePermit = vehiclePermit?.trim?.() || '';
+    const trimmedShopName = groceryShopName?.trim?.() || '';
+    const normalizedSalesTax = salesTax?.toString()?.trim?.() || '';
+
     let data = {};
 
-    if (isGroceryOwner) data = {image, countryValue, openingTime, closingTime, groceryShopName, address: region.name, salesTax};
-    else if (isDriver) data = {image, countryValue, vehiclePermit, address: region.name};
+    if (isGroceryOwner) data = {image, countryValue: trimmedCountry, openingTime, closingTime, groceryShopName: trimmedShopName, address: trimmedAddress, salesTax: normalizedSalesTax};
+    else if (isDriver) data = {image, countryValue: trimmedCountry, vehiclePermit: trimmedVehiclePermit, address: trimmedAddress};
 
+    console.log('CompleteProfile validation input:', data);
     const isValidate = isGroceryOwner ? ownerCompleteProfileValidations(data) : driverCompleteProfileValidations(data);
     if (!isValidate) return;
 
@@ -95,29 +103,30 @@ const CompleteProfile = ({navigation, route}) => {
 
       const commonData = {
         image: image.fileName ? await uploadImageToS3(file) : image.uri,
-        location: {type: 'Point', address: region.name, coordinates: [region.longitude, region.latitude]},
-        country: countryValue,
+        location: {type: 'Point', address: trimmedAddress, coordinates: [Number(region.longitude), Number(region.latitude)]},
+        country: trimmedCountry,
       };
+      console.log('CompleteProfile commonData:', commonData);
 
       let formatedData = {};
 
       if (isGroceryOwner) {
         formatedData = {
           ...commonData,
-          shopTitle: groceryShopName,
+          shopTitle: trimmedShopName,
           operatingHours: `${openingTime.toISOString()}to${closingTime.toISOString()}`,
-          salesTax,
+          salesTax: Number(normalizedSalesTax),
         };
       }
 
       if (isDriver) {
         formatedData = {
           ...commonData,
-          vehiclePermit,
+          vehiclePermit: trimmedVehiclePermit,
         };
       }
 
-      console.log('Body: ', formatedData);
+      console.log('CompleteProfile request body:', formatedData);
       updateProfileAPI(formatedData);
     } catch (error) {
       console.log(error);
@@ -127,7 +136,14 @@ const CompleteProfile = ({navigation, route}) => {
   };
 
   const updateProfileAPI = data => {
+    console.log('CompleteProfile API call config:', {
+      isEditMode,
+      isGroceryOwner,
+      isDriver,
+    });
+
     const onSuccess = response => {
+      console.log('CompleteProfile success response: ', response);
       if (response.success) {
         const user = response.data.user;
         if (user) dispatch(authActions.setUser(user)); // NEED TO REMOVE ADD PLACE IN AFTER BANK ADD VERIFY
@@ -135,6 +151,12 @@ const CompleteProfile = ({navigation, route}) => {
         if (isEditMode) navigation.goBack();
         else navigation.navigate(ROUTES.AddBank);
       }
+    };
+
+    const onError = error => {
+      console.log('CompleteProfile error response: ', error);
+      onAPIError(error);
+      ShowMessage(error?.message || 'Unable to save profile. Please try again.');
     };
 
     let endPoint = API.driverProfileUpdate;
@@ -145,15 +167,21 @@ const CompleteProfile = ({navigation, route}) => {
     if (isGroceryOwner && !isEditMode) apiMethod = API_METHODS.POST;
     else if (isGroceryOwner && isEditMode) apiMethod = API_METHODS.PATCH;
 
-    callApi(apiMethod, endPoint, data, onSuccess, onAPIError, setIsLoading);
+    console.log('CompleteProfile API request:', {apiMethod, endPoint, data});
+    callApi(apiMethod, endPoint, data, onSuccess, onError, setIsLoading);
   };
 
   const handleSelectLocation = (data, details) => {
+    const address = data?.description || details?.formatted_address || '';
+    const latitude = details?.geometry?.location?.lat ?? region.latitude;
+    const longitude = details?.geometry?.location?.lng ?? region.longitude;
+
+    console.log('CompleteProfile handleSelectLocation:', {data, details, address, latitude, longitude});
     setRegion(current => ({
       ...current,
-      name: data.description,
-      latitude: details.geometry.location.lat,
-      longitude: details.geometry.location.lng,
+      name: address,
+      latitude,
+      longitude,
     }));
   };
 
@@ -169,68 +197,93 @@ const CompleteProfile = ({navigation, route}) => {
   return (
     <FruitsColorBackgroundWrapper>
       <Screen>
-        <Header />
         <Loader isLoading={isLoading} />
-        <AppScrollView>
-          <View style={signUpStyles.headText}>
-            <AppText fontFamily={FONTS.medium} fontSize={18}>
-              {isGroceryOwner ? 'Shop' : 'Complete'} profile
-            </AppText>
-            <AppText fontSize={12}>Complete your profile by adding basic information</AppText>
-          </View>
-          <View style={[globalStyles.flex1, globalStyles.inputsGap, {zIndex: 1}]}>
-            {isDriver ? (
-              <View style={[globalStyles.inputsGap, signUpStyles.inputsContainer]}>
-                <Pressable onPress={handleSelectImage} style={profileStyles.avatarContainer}>
-                  {image ? <Image source={{uri: image?.uri}} style={profileStyles.image} /> : <UserAvatarIcon width={120} height={120} />}
-                  <CameraPrimaryIcon width={25} height={25} style={profileStyles.cameraIcon} />
-                </Pressable>
+        <KeyboardAvoidingView style={globalStyles.flex1} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+          <Header />
+          <AppScrollView
+            enableOnAndroid
+            keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="interactive"
+            extraScrollHeight={40}
+            contentContainerStyle={globalStyles.screenPaddingBottom10}>
+            <View style={signUpStyles.headText}>
+              <AppText fontFamily={FONTS.medium} fontSize={18}>
+                {isGroceryOwner ? 'Shop' : 'Complete'} profile
+              </AppText>
+              <AppText fontSize={12}>Complete your profile by adding basic information</AppText>
+            </View>
+            <View style={[globalStyles.flex1, globalStyles.inputsGap, {zIndex: 1}]}>
+              {isDriver ? (
+                <View style={[globalStyles.inputsGap, signUpStyles.inputsContainer]}>
+                  <Pressable onPress={handleSelectImage} style={profileStyles.avatarContainer}>
+                    {image ? <Image source={{uri: image?.uri}} style={profileStyles.image} /> : <UserAvatarIcon width={120} height={120} />}
+                    <CameraPrimaryIcon width={25} height={25} style={profileStyles.cameraIcon} />
+                  </Pressable>
 
-                <GooglePlacesInput onSelect={handleSelectLocation} />
-                <AppTextInput placeholder="Vehicle Permit" onChangeText={setVehiclePermit} />
-              </View>
-            ) : (
-              <View style={[globalStyles.inputsGap, signUpStyles.inputsContainer]}>
-                <Pressable onPress={handleSelectImage} style={profileStyles.avatarContainer}>
-                  {image ? <Image source={{uri: image?.uri}} style={profileStyles.image} /> : <UserAvatarIcon width={120} height={120} />}
-                  <CameraPrimaryIcon width={25} height={25} style={profileStyles.cameraIcon} />
-                </Pressable>
+                  <GooglePlacesInput
+                    onSelect={handleSelectLocation}
+                    region={region}
+                    containerStyle={{zIndex: 1000}}
+                    listViewStyle={{zIndex: 1001, elevation: 12}}
+                    textInputProps={{
+                      value: region.name,
+                      onChangeText: text => setRegion(current => ({...current, name: text})),
+                    }}
+                  />
+                  <AppTextInput placeholder="Vehicle Permit" onChangeText={setVehiclePermit} />
+                </View>
+              ) : (
+                <View style={[globalStyles.inputsGap, signUpStyles.inputsContainer]}>
+                  <Pressable onPress={handleSelectImage} style={profileStyles.avatarContainer}>
+                    {image ? <Image source={{uri: image?.uri}} style={profileStyles.image} /> : <UserAvatarIcon width={120} height={120} />}
+                    <CameraPrimaryIcon width={25} height={25} style={profileStyles.cameraIcon} />
+                  </Pressable>
 
-                <AppTextInput placeholder="Grocery Shop Name" onChangeText={setGroceryShopName} value={groceryShopName} />
+                  <AppTextInput placeholder="Grocery Shop Name" onChangeText={setGroceryShopName} value={groceryShopName} />
 
-                <GooglePlacesInput onSelect={handleSelectLocation} placeholder={region.name ? region.name : 'Address'} />
+                  <GooglePlacesInput
+                    onSelect={handleSelectLocation}
+                    region={region}
+                    placeholder="Address"
+                    containerStyle={{zIndex: 1000}}
+                    listViewStyle={{zIndex: 1001, elevation: 12}}
+                    textInputProps={{
+                      value: region.name,
+                      onChangeText: text => setRegion(current => ({...current, name: text})),
+                    }}
+                  />
 
-                <AppTextInput placeholder="Sales Tax %" onChangeText={setSalesTax} value={salesTax} keyboardType={'number-pad'} />
-                <Pressable onPress={() => setIsOpeningTimeModalShow(true)} style={profileStyles.timeContainer}>
-                  <AppText greyText>{formatedOpeningTime}</AppText>
-                  <ChevronIcon height={18} width={18} />
-                </Pressable>
+                  <AppTextInput placeholder="Sales Tax %" onChangeText={setSalesTax} value={salesTax} keyboardType={'number-pad'} />
+                  <Pressable onPress={() => setIsOpeningTimeModalShow(true)} style={profileStyles.timeContainer}>
+                    <AppText greyText>{formatedOpeningTime}</AppText>
+                    <ChevronIcon height={18} width={18} />
+                  </Pressable>
 
-                <Pressable onPress={() => setIsClosingTimeModalShow(true)} style={profileStyles.timeContainer}>
-                  <AppText greyText>{formatedClosingTime}</AppText>
-                  <ChevronIcon height={18} width={18} />
-                </Pressable>
-              </View>
-            )}
+                  <Pressable onPress={() => setIsClosingTimeModalShow(true)} style={profileStyles.timeContainer}>
+                    <AppText greyText>{formatedClosingTime}</AppText>
+                    <ChevronIcon height={18} width={18} />
+                  </Pressable>
+                </View>
+              )}
 
-            <DropDownPicker
-              props={{activeOpacity: 0.5}}
-              zIndex={10}
-              zIndexInverse={1}
-              placeholder="Country"
-              open={countryDropdownOpen}
-              value={countryValue}
-              items={countryItems}
-              setOpen={setCountryDropdownOpen}
-              setValue={setCountryValue}
-              setItems={setCountryItems}
-              style={productStyles.dropdownStyle}
-              placeholderStyle={productStyles.dropdownPlaceholder}
-              dropDownContainerStyle={productStyles.dropdownContainerStyle}
-              textStyle={productStyles.dropdownText}
-              dropDownDirection="BOTTOM"
-            />
-          </View>
+              <DropDownPicker
+                props={{activeOpacity: 0.5}}
+                zIndex={10}
+                zIndexInverse={1}
+                placeholder="Country"
+                open={countryDropdownOpen}
+                value={countryValue}
+                items={countryItems}
+                setOpen={setCountryDropdownOpen}
+                setValue={setCountryValue}
+                setItems={setCountryItems}
+                style={productStyles.dropdownStyle}
+                placeholderStyle={productStyles.dropdownPlaceholder}
+                dropDownContainerStyle={productStyles.dropdownContainerStyle}
+                textStyle={productStyles.dropdownText}
+                dropDownDirection="BOTTOM"
+              />
+            </View>
           {/* <View style={{marginTop: 30}}>
             <View style={{gap: 10}}>
               <AppText fontFamily={FONTS.medium} fontSize={18}>
@@ -245,8 +298,9 @@ const CompleteProfile = ({navigation, route}) => {
             </View>
           </View> */}
 
-          <AppButton title={'Confirm'} containerStyle={[globalStyles.bottomButton]} onPress={handleConfirm} />
-        </AppScrollView>
+            <AppButton title={'Confirm'} containerStyle={[globalStyles.bottomButton]} onPress={handleConfirm} />
+          </AppScrollView>
+        </KeyboardAvoidingView>
       </Screen>
 
       <DatePicker

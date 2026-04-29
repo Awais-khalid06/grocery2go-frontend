@@ -1,4 +1,4 @@
-import {Pressable, View} from 'react-native';
+import {KeyboardAvoidingView, Platform, Pressable, View} from 'react-native';
 import React, {useState} from 'react';
 import FruitsColorBackgroundWrapper from '../common/fruitsColorBackgroundWrapper';
 import {AppButton, AppScrollView, AppText, AppTextInput, Header, Loader, Screen} from '../../../components';
@@ -36,6 +36,7 @@ const SignUp = ({navigation}) => {
   const formatedEmail = email.toLowerCase().trim();
 
   const handleSelectLocation = (data, details) => {
+    console.log('SignUp GooglePlacesInput onSelect:', {data, details});
     setRegion(current => ({
       ...current,
       name: data.description,
@@ -80,62 +81,69 @@ const SignUp = ({navigation}) => {
     <FruitsColorBackgroundWrapper>
       <Loader isLoading={isLoading || isSocialLoading} />
       <Screen>
-        <Header />
-        <AppScrollView>
-          <View style={signUpStyles.headText}>
-            <AppText fontFamily={FONTS.medium} fontSize={18}>
-              Sign Up
-            </AppText>
-            <AppText fontSize={12}>Sign Up new account</AppText>
-          </View>
-
-          <View style={[globalStyles.inputsGap, signUpStyles.inputsContainer]}>
-            <AppTextInput placeholder="First Name" onChangeText={setFirstName} />
-            <AppTextInput placeholder="Last Name" onChangeText={setLastName} />
-            <AppTextInput placeholder="Email Address" onChangeText={setEmail} />
-
-            <RNPhoneInput
-              placeholder="(604) 925-7595"
-              containerStyle={signUpStyles.phoneInput}
-              textInputStyle={signUpStyles.phoneInputTextInput}
-              textContainerStyle={signUpStyles.phoneInputTextContainer}
-              textInputProps={{placeholderTextColor: '#919191'}}
-              codeTextStyle={signUpStyles.phoneInputCodeText}
-              defaultCode="US"
-              layout="second"
-              onChangeText={text => {}}
-              onChangeFormattedText={setPhoneNumber}
-            />
-            <AppTextInput placeholder="Password" onChangeText={setPassword} isPasswordEye={true} />
-            <AppTextInput placeholder="Retype Password" isPasswordEye={true} onChangeText={setConfirmPassword} />
-            {/* <AppTextInput placeholder="Address" RightIcon={LocationGrayIcon} onChangeText={text => setRegion({...region, name: text})} /> */}
-            {isCustomer && <GooglePlacesInput onSelect={handleSelectLocation} />}
-          </View>
-
-          <AppButton title={'Sign Up'} containerStyle={{marginTop: 30}} onPress={handleSignUp} />
-          <View style={globalStyles.flex1} />
-          <View style={signUpStyles.buttonContainer}>
-            <AppText greyText>
-              Already have an account?{' '}
-              <AppText primary fontFamily={FONTS.semiBold} onPress={() => navigation.navigate(ROUTES.SignIn)}>
-                Sign In
+        <KeyboardAvoidingView style={globalStyles.flex1} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+          <Header />
+          <AppScrollView
+            enableOnAndroid
+            keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="interactive"
+            extraScrollHeight={40}
+            contentContainerStyle={globalStyles.screenPaddingBottom10}>
+            <View style={signUpStyles.headText}>
+              <AppText fontFamily={FONTS.medium} fontSize={18}>
+                Sign Up
               </AppText>
-            </AppText>
-          </View>
-
-          <View style={signUpStyles.bottomContent}>
-            <AppText fontSize={12} greyText>
-              Or sign in with
-            </AppText>
-
-            <View style={signUpStyles.socialIcons}>
-              <Pressable onPress={googleLogin}>
-                <GoogleCircleIcon />
-              </Pressable>
-              <AppleCircleIcon />
+              <AppText fontSize={12}>Sign Up new account</AppText>
             </View>
-          </View>
-        </AppScrollView>
+
+            <View style={[globalStyles.inputsGap, signUpStyles.inputsContainer]}>
+              <AppTextInput placeholder="First Name" onChangeText={setFirstName} />
+              <AppTextInput placeholder="Last Name" onChangeText={setLastName} />
+              <AppTextInput placeholder="Email Address" onChangeText={setEmail} />
+
+              <RNPhoneInput
+                placeholder="(604) 925-7595"
+                containerStyle={signUpStyles.phoneInput}
+                textInputStyle={signUpStyles.phoneInputTextInput}
+                textContainerStyle={signUpStyles.phoneInputTextContainer}
+                textInputProps={{placeholderTextColor: '#919191'}}
+                codeTextStyle={signUpStyles.phoneInputCodeText}
+                defaultCode="US"
+                layout="second"
+                onChangeText={text => {}}
+                onChangeFormattedText={setPhoneNumber}
+              />
+              <AppTextInput placeholder="Password" onChangeText={setPassword} isPasswordEye={true} />
+              <AppTextInput placeholder="Retype Password" isPasswordEye={true} onChangeText={setConfirmPassword} />
+              {/* <AppTextInput placeholder="Address" RightIcon={LocationGrayIcon} onChangeText={text => setRegion({...region, name: text})} /> */}
+              {isCustomer && <GooglePlacesInput onSelect={handleSelectLocation} />}
+            </View>
+
+            <AppButton title={'Sign Up'} containerStyle={{marginTop: 30}} onPress={handleSignUp} />
+            <View style={globalStyles.flex1} />
+            <View style={signUpStyles.buttonContainer}>
+              <AppText greyText>
+                Already have an account?{' '}
+                <AppText primary fontFamily={FONTS.semiBold} onPress={() => navigation.navigate(ROUTES.SignIn)}>
+                  Sign In
+                </AppText>
+              </AppText>
+            </View>
+
+            <View style={signUpStyles.bottomContent}>
+              <AppText fontSize={12} greyText>
+                Or sign in with
+              </AppText>
+
+              <View style={signUpStyles.socialIcons}>
+                <Pressable onPress={googleLogin}>
+                  <GoogleCircleIcon />
+                </Pressable>
+                {Platform.OS === 'ios' && <AppleCircleIcon />}
+              </View>
+            </View>
+          </AppScrollView>
+        </KeyboardAvoidingView>
       </Screen>
     </FruitsColorBackgroundWrapper>
   );

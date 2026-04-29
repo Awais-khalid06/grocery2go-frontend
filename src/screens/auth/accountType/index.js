@@ -26,7 +26,10 @@ const AccountType = ({navigation}) => {
 
   return (
     <FruitsColorBackgroundWrapper>
-      <AppScrollView>
+      <AppScrollView
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
+        contentContainerStyle={{paddingBottom: 10}}>
         <LogoIcon width={wp(45)} style={accountTypeStyles.logo} />
 
         <View style={accountTypeStyles.content}>

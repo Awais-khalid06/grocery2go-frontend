@@ -1,4 +1,4 @@
-import {View} from 'react-native';
+import {KeyboardAvoidingView, Platform, View} from 'react-native';
 import React, {useState} from 'react';
 import FruitsColorBackgroundWrapper from '../common/fruitsColorBackgroundWrapper';
 import {AppButton, AppScrollView, AppText, AppTextInput, Header, Loader, Screen} from '../../../components';
@@ -39,25 +39,32 @@ const ResetPassword = ({navigation, route}) => {
   return (
     <FruitsColorBackgroundWrapper>
       <Screen>
-        <Header />
         <Loader isLoading={isLoading} />
-        <AppScrollView>
-          <View style={[signUpStyles.headText, {marginTop: hp(24)}]}>
-            <AppText fontFamily={FONTS.medium} fontSize={18}>
-              Reset Password
-            </AppText>
-            <AppText greyText fontSize={12}>
-              Your password must be different from previous password.
-            </AppText>
-          </View>
+        <KeyboardAvoidingView style={globalStyles.flex1} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+          <Header />
+          <AppScrollView
+            enableOnAndroid
+            keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="interactive"
+            extraScrollHeight={40}
+            contentContainerStyle={globalStyles.screenPaddingBottom10}>
+            <View style={[signUpStyles.headText, {marginTop: hp(24)}]}>
+              <AppText fontFamily={FONTS.medium} fontSize={18}>
+                Reset Password
+              </AppText>
+              <AppText greyText fontSize={12}>
+                Your password must be different from previous password.
+              </AppText>
+            </View>
 
-          <View style={[globalStyles.inputsGap, signUpStyles.inputsContainer]}>
-            <AppTextInput placeholder="Password" isPasswordEye={true} onChangeText={setPassword} />
-            <AppTextInput placeholder="Retype Password" isPasswordEye={true} onChangeText={setConfirmPassword} />
-          </View>
+            <View style={[globalStyles.inputsGap, signUpStyles.inputsContainer]}>
+              <AppTextInput placeholder="Password" isPasswordEye={true} onChangeText={setPassword} />
+              <AppTextInput placeholder="Retype Password" isPasswordEye={true} onChangeText={setConfirmPassword} />
+            </View>
 
-          <AppButton title={'Continue'} onPress={handleContinue} containerStyle={{marginTop: 65}} />
-        </AppScrollView>
+            <AppButton title={'Continue'} onPress={handleContinue} containerStyle={{marginTop: 65}} />
+          </AppScrollView>
+        </KeyboardAvoidingView>
       </Screen>
     </FruitsColorBackgroundWrapper>
   );

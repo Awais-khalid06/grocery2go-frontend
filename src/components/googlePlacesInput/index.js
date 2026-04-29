@@ -8,8 +8,8 @@ import { GOOGLE_API_KEY } from '../../network/Environment';
 const GooglePlacesInput = ({
   onSelect,
   region = {
-    latitude: 48.85552283403529,
-    longitude: 2.37035159021616,
+    latitude: 0,
+    longitude: 0,
     latitudeDelta: 5,
     longitudeDelta: 5,
   },
@@ -21,31 +21,38 @@ const GooglePlacesInput = ({
 }) => {
   return (
     <GooglePlacesAutocomplete
-      nearbyPlacesAPI="GooglePlacesSearch"
+      minLength={2}
+      debounce={300}
       renderLeftButton={() => <LocationGrayIcon style={styles.searchIcon} height={18} width={18} />}
       renderDescription={row => row.description || row.formatted_address || row.name}
-      keepResultsAfterBlur={false}
-      listViewDisplayed={false}
+      keepResultsAfterBlur={true}
+      listViewDisplayed="auto"
       enablePoweredByContainer={false}
       isRowScrollable={true}
       // currentLocation={true}
       // currentLocationLabel="Current location"
-      onFail={error => console.error(error)}
+      onFail={error => console.log('GooglePlacesInput onFail:', error)}
+      onNotFound={() => console.log('GooglePlacesInput onNotFound')}
+      onTimeout={() => console.log('GooglePlacesInput onTimeout')}
       placeholder={placeholder}
       textInputProps={{
+        onChangeText: text => console.log('GooglePlacesInput typing:', text),
         style: styles.textInput,
         selectionColor: COLORS.primary,
         placeholderTextColor: COLORS.textGray,
         ...textInputProps,
       }}
       fetchDetails={true}
-      GooglePlacesSearchQuery={{
-        rankby: 'distance',
+      timeout={15000}
+      onPress={(data, details = null) => {
+        console.log('GooglePlacesInput onPress:', {data, details});
+        onSelect?.(data, details);
       }}
-      onPress={(data, details = null) => onSelect?.(data, details)}
       query={{
         key: GOOGLE_API_KEY,
-        location: `${region.latitude}, ${region.longitude}`,
+        location: `${region.latitude},${region.longitude}`,
+        language: 'en',
+        types: 'geocode',
       }}
       styles={{
         container: [styles.container, containerStyle],
@@ -61,16 +68,25 @@ const GooglePlacesInput = ({
 };
 
 const styles = StyleSheet.create({
-  container: { zIndex: 1 },
+  container: {
+    zIndex: 1000,
+    elevation: 10,
+  },
   listView: {
+    position: 'absolute',
+    top: 48,
+    left: 0,
+    right: 0,
+    zIndex: 1001,
     backgroundColor: COLORS.white,
-    overflow: 'hidden',
+    overflow: 'visible',
     paddingRight: 10,
     shadowColor: COLORS.black,
-    elevation: 1,
+    elevation: 10,
     shadowOffset: { width: -2, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
+    borderRadius: 10,
   },
   textInputContainer: { alignItems: 'center', height: 45 },
   textInput: {

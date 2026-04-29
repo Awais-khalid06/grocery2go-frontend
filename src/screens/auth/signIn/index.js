@@ -1,4 +1,4 @@
-import {Pressable, View} from 'react-native';
+import {KeyboardAvoidingView, Platform, Pressable, View} from 'react-native';
 import React, {useState} from 'react';
 import FruitsColorBackgroundWrapper from '../common/fruitsColorBackgroundWrapper';
 import {AppButton, AppScrollView, AppText, AppTextInput, Header, Loader, Screen} from '../../../components';
@@ -85,53 +85,60 @@ const SignIn = ({navigation}) => {
     <FruitsColorBackgroundWrapper>
       <Loader isLoading={isLoading || isSocialLoading} />
       <Screen>
-        <Header />
-        <AppScrollView>
-          <View style={[signUpStyles.headText, {marginTop: hp(24)}]}>
-            <AppText fontFamily={FONTS.medium} fontSize={18}>
-              Sign In
-            </AppText>
-            <AppText fontSize={12}>Sign In your account</AppText>
-          </View>
-          <View style={[globalStyles.inputsGap, signUpStyles.inputsContainer]}>
-            <AppTextInput placeholder="Email Address" onChangeText={setEmail} value={email} />
-            <AppTextInput placeholder="Password" onChangeText={setPassword} value={password} isPasswordEye={true} />
-            <View style={signUpStyles.rememberContainer}>
-              <Pressable onPress={handleRememberMe} style={signUpStyles.checkContainer}>
-                {isRememberMe ? <CheckSquareIcon width={20} height={20} /> : <UnCheckSquareIcon width={20} height={20} />}
+        <KeyboardAvoidingView style={globalStyles.flex1} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+          <Header />
+          <AppScrollView
+            enableOnAndroid
+            keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="interactive"
+            extraScrollHeight={40}
+            contentContainerStyle={globalStyles.screenPaddingBottom10}>
+            <View style={[signUpStyles.headText, {marginTop: hp(24)}]}>
+              <AppText fontFamily={FONTS.medium} fontSize={18}>
+                Sign In
+              </AppText>
+              <AppText fontSize={12}>Sign In your account</AppText>
+            </View>
+            <View style={[globalStyles.inputsGap, signUpStyles.inputsContainer]}>
+              <AppTextInput placeholder="Email Address" onChangeText={setEmail} value={email} />
+              <AppTextInput placeholder="Password" onChangeText={setPassword} value={password} isPasswordEye={true} />
+              <View style={signUpStyles.rememberContainer}>
+                <Pressable onPress={handleRememberMe} style={signUpStyles.checkContainer}>
+                  {isRememberMe ? <CheckSquareIcon width={20} height={20} /> : <UnCheckSquareIcon width={20} height={20} />}
 
-                <AppText greyText>Remember Me</AppText>
-              </Pressable>
-              <AppText greyText onPress={() => navigation.navigate(ROUTES.ForgotPassword)}>
-                Forgot Password?
+                  <AppText greyText>Remember Me</AppText>
+                </Pressable>
+                <AppText greyText onPress={() => navigation.navigate(ROUTES.ForgotPassword)}>
+                  Forgot Password?
+                </AppText>
+              </View>
+            </View>
+
+            <AppButton title={'Sign In'} containerStyle={{marginTop: 30}} onPress={handleSignIn} />
+            <View style={globalStyles.flex1} />
+            <View style={signUpStyles.buttonContainer}>
+              <AppText greyText>
+                Don’t have an account?{' '}
+                <AppText primary fontFamily={FONTS.semiBold} onPress={() => navigation.navigate(ROUTES.SignUp)}>
+                  Sign Up
+                </AppText>
               </AppText>
             </View>
-          </View>
 
-          <AppButton title={'Sign In'} containerStyle={{marginTop: 30}} onPress={handleSignIn} />
-          <View style={globalStyles.flex1} />
-          <View style={signUpStyles.buttonContainer}>
-            <AppText greyText>
-              Don’t have an account?{' '}
-              <AppText primary fontFamily={FONTS.semiBold} onPress={() => navigation.navigate(ROUTES.SignUp)}>
-                Sign Up
+            <View style={signUpStyles.bottomContent}>
+              <AppText fontSize={12} greyText>
+                Or sign in with
               </AppText>
-            </AppText>
-          </View>
 
-          <View style={signUpStyles.bottomContent}>
-            <AppText fontSize={12} greyText>
-              Or sign in with
-            </AppText>
-
-            <View style={signUpStyles.socialIcons}>
-              <Pressable onPress={googleLogin}>
-                <GoogleCircleIcon />
-              </Pressable>
-              <AppleCircleIcon />
+              <View style={signUpStyles.socialIcons}>
+                <Pressable onPress={googleLogin}>
+                  <GoogleCircleIcon />
+                </Pressable>
+                {Platform.OS === 'ios' && <AppleCircleIcon />}
+              </View>
             </View>
-          </View>
-        </AppScrollView>
+          </AppScrollView>
+        </KeyboardAvoidingView>
       </Screen>
     </FruitsColorBackgroundWrapper>
   );

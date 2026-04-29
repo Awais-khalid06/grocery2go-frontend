@@ -1,4 +1,4 @@
-import {View} from 'react-native';
+import {KeyboardAvoidingView, Platform, View} from 'react-native';
 import React, {useState} from 'react';
 import FruitsColorBackgroundWrapper from '../common/fruitsColorBackgroundWrapper';
 import {AppButton, AppScrollView, AppText, Header, Loader, Screen} from '../../../components';
@@ -97,31 +97,38 @@ const Verification = ({navigation, route}) => {
     <Wrapper style={globalStyles.flex1}>
       <Loader isLoading={isLoading} />
       <Screen>
-        <Header />
-        <AppScrollView>
-          <View style={[signUpStyles.headText, {marginTop: isPrevScreenDeleteAccount ? hp(8) : hp(24)}]}>
-            <AppText fontFamily={FONTS.medium} fontSize={18}>
-              Please Verify Your Email
-            </AppText>
-            <AppText greyText fontSize={12}>
-              For your account security we have just sent an email to {paramEmail} with a 4-digit code. Please copy that code and paste in the below field.
-            </AppText>
-          </View>
-          <View style={[globalStyles.inputsGap]}>
-            <OTPTextInput autoFocus tintColor={COLORS.primary} textInputStyle={otpVerifyStyles.otpInput} handleTextChange={setOtp} />
-          </View>
-
-          <View style={[otpVerifyStyles.buttonContainer, {marginTop: isPrevScreenDeleteAccount ? 200 : 35}]}>
-            <AppText greyText fontSize={12}>
-              Didn’t get code? -
-              <AppText primary fontSize={12} onPress={handleResendCode}>
-                {' '}
-                Resend code
+        <KeyboardAvoidingView style={globalStyles.flex1} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+          <Header />
+          <AppScrollView
+            enableOnAndroid
+            keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="interactive"
+            extraScrollHeight={40}
+            contentContainerStyle={globalStyles.screenPaddingBottom10}>
+            <View style={[signUpStyles.headText, {marginTop: isPrevScreenDeleteAccount ? hp(8) : hp(24)}]}>
+              <AppText fontFamily={FONTS.medium} fontSize={18}>
+                Please Verify Your Email
               </AppText>
-            </AppText>
-            <AppButton title={isPrevScreenDeleteAccount ? 'Verify' : 'Continue'} onPress={handleContinue} />
-          </View>
-        </AppScrollView>
+              <AppText greyText fontSize={12}>
+                For your account security we have just sent an email to {paramEmail} with a 4-digit code. Please copy that code and paste in the below field.
+              </AppText>
+            </View>
+            <View style={[globalStyles.inputsGap]}>
+              <OTPTextInput autoFocus tintColor={COLORS.primary} textInputStyle={otpVerifyStyles.otpInput} handleTextChange={setOtp} />
+            </View>
+
+            <View style={[otpVerifyStyles.buttonContainer, {marginTop: isPrevScreenDeleteAccount ? 200 : 35}]}>
+              <AppText greyText fontSize={12}>
+                Didn’t get code? -
+                <AppText primary fontSize={12} onPress={handleResendCode}>
+                  {' '}
+                  Resend code
+                </AppText>
+              </AppText>
+              <AppButton title={isPrevScreenDeleteAccount ? 'Verify' : 'Continue'} onPress={handleContinue} />
+            </View>
+          </AppScrollView>
+        </KeyboardAvoidingView>
       </Screen>
     </Wrapper>
   );
