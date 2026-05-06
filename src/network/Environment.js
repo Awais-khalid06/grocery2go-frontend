@@ -2,6 +2,9 @@
 export const BASE_URL = 'http://ec2-3-87-102-186.compute-1.amazonaws.com/api/v1/';
 export const SOCKET_BASE_URL = 'http://ec2-3-87-102-186.compute-1.amazonaws.com/';
 
+// export const BASE_URL = 'http://localhost:3000/api/v1/';
+// export const SOCKET_BASE_URL = 'http://localhost:3000/';
+
 export const IMAGE_BASE_URL = '';
 export const GOOGLE_API_KEY = 'AIzaSyCJ65P5-1Tf_xwj4sSb3pvQvOrOeR1s2jY';
 export const STRIPE_PUBLISHABLE_KEY = 'pk_test_51TM9zbFG0IAg9B3fETwo6u90mdUickUC0PkjWgTAEbDRZYt8L5OjFTMrGlorAasjEu9J4K9G9V2rAYZ95rv4U51v00gr4e6q8g';
@@ -28,14 +31,14 @@ export const API = {
   updateShop: 'shop/',
   product: 'product/',
   updateProduct: 'product/update-product',
-  getShopProducts: 'product/get-shop-products/',
+  getShopProducts: 'product/get-shop-products',
   deleteProduct: 'product/delete-product',
   getOneProduct: 'product/get-product-details',
   productLikeUnLike: 'product/mark-favorite-unfavorite',
   getFavorite: 'product/get-all-favorite-products',
   shopsNearMe: 'shop/get-nearby-shops',
   getAllShops: 'shop/getAllShop',
-  getOneShop: '/shop', // SHOP ID
+  getOneShop: 'shop', // SHOP ID
   getAllFavShops: 'shop/get-all-favorite-shop',
   shopLikeUnlike: 'shop/mark-favorite-unfavorite', // SHOP ID
   confirmCheckout: 'cart/verify-payment',

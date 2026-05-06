@@ -12,6 +12,7 @@ import {onAPIError} from '../../../helpers';
 import {useDispatch, useSelector} from 'react-redux';
 import {shopOwnerProductsSelector, userSelector} from '../../../redux/selectors';
 import {shopOwnerProductActions} from '../../../redux/slices/shopOwner/shopOwnerProduct';
+import {useFocusEffect} from '@react-navigation/native';
 
 const ShopOwnerProducts = ({navigation}) => {
   const products = useSelector(shopOwnerProductsSelector);
@@ -24,6 +25,12 @@ const ShopOwnerProducts = ({navigation}) => {
     getProducts();
   }, []);
 
+  useFocusEffect(
+    React.useCallback(() => {
+      getProducts();
+    }, [shopId]),
+  );
+
   const getProducts = () => {
     if (!shopId) return;
 
@@ -34,7 +41,7 @@ const ShopOwnerProducts = ({navigation}) => {
       }
     };
 
-    callApi(API_METHODS.GET, `${API.getShopProducts}`, null, onSuccess, onAPIError, setIsLoading);
+    callApi(API_METHODS.GET, `${API.getShopProducts}/${shopId}`, null, onSuccess, onAPIError, setIsLoading);
   };
 
   return (
@@ -61,7 +68,7 @@ const ShopOwnerProducts = ({navigation}) => {
         contentContainerStyle={[globalStyles.flexGrow1, globalStyles.screenPadding, globalStyles.inputsGap, globalStyles.screenPaddingBottom10]}
       />
 
-      <Pressable style={listStyles.addContainer} onPress={() => navigation.navigate(ROUTES.AddProduct)}>
+      <Pressable style={listStyles.addContainer} onPress={() => navigation.navigate(ROUTES.AddProduct, {shopId})}>
         <PlusIcon />
       </Pressable>
     </Screen>

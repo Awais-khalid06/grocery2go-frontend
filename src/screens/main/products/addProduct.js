@@ -95,8 +95,7 @@ const AddProduct = ({navigation, route}) => {
     const isValidate = addProductValidations(data);
     if (!isValidate) return;
 
-    ShowMessage('Product will be uploaded soon');
-    navigation.goBack();
+    setIsLoading(true);
     let images = [];
     try {
       images = await Promise.all(
@@ -109,6 +108,7 @@ const AddProduct = ({navigation, route}) => {
         }),
       );
     } catch (error) {
+      setIsLoading(false);
       ShowMessage(error?.message || 'Unable to upload product images.');
       console.log('Add product image upload error:', error);
       return;
@@ -122,10 +122,20 @@ const AddProduct = ({navigation, route}) => {
         categoryName: productCategoriesValue,
         productDetails: {...data, ...formatedData},
       };
-      commonAPI.updateProductAPI(formatedData);
+      const response = await commonAPI.updateProductAPI(formatedData);
+      setIsLoading(false);
+      if (response?.success) {
+        ShowMessage('Product updated successfully');
+        navigation.goBack();
+      }
     } else {
-      formatedData = {...data, ...formatedData};
-      addProductAPI(formatedData);
+      formatedData = {...data, ...formatedData, shopId};
+      const response = await addProductAPI(formatedData);
+      setIsLoading(false);
+      if (response?.success) {
+        ShowMessage('Product added successfully');
+        navigation.goBack();
+      }
     }
   };
 
@@ -138,8 +148,16 @@ const AddProduct = ({navigation, route}) => {
   };
 
   const addProductAPI = async data => {
-    const onSuccess = response => {};
-    callApi(API_METHODS.POST, API.productCreate, data, onSuccess, onAPIError);
+    let apiResponse = {};
+    const onSuccess = response => {
+      apiResponse = response;
+    };
+    const onError = error => {
+      apiResponse = error;
+      onAPIError(error);
+    };
+    await callApi(API_METHODS.POST, API.productCreate, data, onSuccess, onError);
+    return apiResponse;
   };
 
   const handleUploadImagePress = async () => {

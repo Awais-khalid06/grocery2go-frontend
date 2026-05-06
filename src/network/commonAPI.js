@@ -252,6 +252,23 @@ const getOneShop = async shopId => {
   return apiResponse;
 };
 
+const getShopProducts = async shopId => {
+  let apiResponse = {};
+
+  const onSuccess = response => {
+    console.log('SHOP PRODUCTS RESPONSE:', response);
+    
+    apiResponse = response;
+  };
+
+  const onError = error => (apiResponse = error);
+
+  const endpoint = shopId ? `${API.getShopProducts}/${shopId}` : `${API.getShopProducts}`;
+  await callApi(API_METHODS.GET, endpoint, null, onSuccess, onError);
+
+  return apiResponse;
+};
+
 const getAllRiders = async () => {
   let apiResponse = {};
 
@@ -401,6 +418,7 @@ export default {
   updateProductAPI,
   productLikeUnlike,
   getOneShop,
+  getShopProducts,
   shopLikeUnlike,
   getAllRiders,
   getRiderDetail,

@@ -29,10 +29,27 @@ const ShopDetails = ({navigation, route}) => {
 
   const getShopDetail = async () => {
     setIsLoading(true);
-    const response = await commonAPI.getOneShop(shopId);
+    const [shopResponse, productsResponse] = await Promise.all([
+      commonAPI.getOneShop(shopId),
+      commonAPI.getShopProducts(shopId),
+    ]);
     setIsLoading(false);
 
-    if (response.success) setShop(response.data.data);
+    if (shopResponse.success) {
+      const shopData = shopResponse?.data?.data || {};
+      const productsFromShopDetail = Array.isArray(shopData?.groceries) ? shopData.groceries : [];
+      const productsFromDedicatedAPI = Array.isArray(productsResponse?.data)
+        ? productsResponse.data
+        : Array.isArray(productsResponse?.data?.data)
+          ? productsResponse.data.data
+          : null;
+
+      const products = productsResponse?.success && productsFromDedicatedAPI
+        ? productsFromDedicatedAPI
+        : productsFromShopDetail;
+
+      setShop({...shopData, groceries: products});
+    }
   };
 
   const handleLikeUnLikeShop = () => {
