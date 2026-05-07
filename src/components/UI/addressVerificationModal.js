@@ -16,7 +16,7 @@ const AddressVerificationModal = ({isVisible, setIsVisible, onPressChange, onPre
         <View style={cartStyles.modalContent}>
           <AppText fontFamily={FONTS.medium}>Correct delivery address?</AppText>
           <AppText greyText fontSize={12}>
-            Lorem ipsum dolor sit amet
+            Please confirm your delivery address before we place the request.
           </AppText>
         </View>
 

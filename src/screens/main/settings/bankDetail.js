@@ -14,7 +14,7 @@ const BankDetail = ({navigation}) => {
             Add Bank Info
           </AppText>
           <AppText fontSize={12} greyText>
-            Lorem ipsum dolor sit amet consectetur. Adipiscing pulvinar nulla nullam sit ultricies.
+            Add your bank details to receive payouts and keep your account information up to date.
           </AppText>
           <View style={[globalStyles.inputsGap, {marginTop: 25}]}>
             <AppTextInput placeholder="Bank Info" />

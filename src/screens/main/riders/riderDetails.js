@@ -96,7 +96,7 @@ const RiderDetails = ({navigation, route}) => {
           <View style={riderStyles.specialNoteContainer}>
             <AppText>Special Note</AppText>
             <AppText fontSize={12} greyText>
-              Lorem ipsum dolor sit amet consectetur. Tincidunt lectus nibh eu sagittis tempus sit parturient vulputate. Etiam sagittis ut nunc sagittis diam vel tortor penatibus a.
+              This rider is punctual, professional, and handles deliveries with care.
             </AppText>
           </View>
         </View> */}

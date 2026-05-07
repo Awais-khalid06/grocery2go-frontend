@@ -212,7 +212,7 @@ const DriverListOrderDetail = ({navigation, route}) => {
       />
       <SuccessModal
         heading={'Payment Done'}
-        description={'Lorem ipsum dolor sit amet'}
+        description={'Payment received successfully. You can now return to the home screen.'}
         buttonTitle={'Back To Home'}
         onPressButton={() => {
           setPaymentDoneModalShow(false);

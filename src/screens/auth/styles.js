@@ -54,6 +54,7 @@ export const accountTypeStyles = StyleSheet.create({
   logo: {alignSelf: 'center'},
   accountsContainer: {marginTop: 20, gap: 20},
   content: {marginBottom: 40},
+  subtitle: {marginTop: 8, color: COLORS.textGray},
 });
 
 export const onboardingStyles = StyleSheet.create({

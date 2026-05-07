@@ -74,7 +74,7 @@ const AddFeedback = ({navigation, route}) => {
         isVisible={successModalVisible}
         setIsVisible={setSuccessModalVisible}
         heading={'Review Added'}
-        description={'Lorem ipsum dolor sit amet consectetur. '}
+        description={'Thank you for your feedback. Your review has been submitted successfully.'}
         buttonTitle={'Back To Home'}
         onPressButton={() => navigation.popToTop()}
       />

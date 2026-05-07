@@ -12,7 +12,7 @@ const DATA = [
   {
     image: BlueCircleIcon,
     title: 'Grocery item added',
-    subtitle: 'Lorem ipsum dolor sit amet, consectet adipiscing elit, sed do eiusmod tempor.',
+    subtitle: 'A new grocery item was added successfully and is now visible in your store.',
     count: 2,
     isActive: true,
     timestamp: '11:00 AM',
@@ -20,14 +20,14 @@ const DATA = [
   {
     image: RedCircleIcon,
     title: 'item out of stock',
-    subtitle: 'Lorem ipsum dolor sit amet, consectet adipiscing elit, sed do eiusmod tempor.',
+    subtitle: 'One or more items are out of stock. Update inventory to avoid missed orders.',
     count: 5,
     isActive: false,
     timestamp: '01:00 AM',
   },
 
-  {image: GreenCircleIcon, title: 'New Order #1234567', subtitle: 'Lorem ipsum dolor sit amet, consectet adipiscing elit, sed do eiusmod tempor.', count: 2, isActive: false, timestamp: '11:00 AM'},
-  {image: GreenCircleIcon, title: 'New Order #1234567', subtitle: 'Lorem ipsum dolor sit amet, consectet adipiscing elit, sed do eiusmod tempor.', count: 2, isActive: false, timestamp: '11:00 AM'},
+  {image: GreenCircleIcon, title: 'New Order #1234567', subtitle: 'You have received a new order. Review items and confirm it as soon as possible.', count: 2, isActive: false, timestamp: '11:00 AM'},
+  {image: GreenCircleIcon, title: 'New Order #1234567', subtitle: 'You have received a new order. Review items and confirm it as soon as possible.', count: 2, isActive: false, timestamp: '11:00 AM'},
 ];
 
 const NOTIFICATIONS = [

@@ -11,34 +11,34 @@ export const ONBOARDINGS = [
   {
     icon: ShoppingBagIcon,
     title: 'Best Rating',
-    description: 'Lorem ipsum dolor sit amet consectetur. Cras in eget enim diam. Faucibus purus maecenas faucibus.',
+    description: 'Discover top-rated grocery stores near you and shop confidently with trusted reviews.',
   },
   {
     icon: BasketCirclesIcon,
     title: 'Best Rating',
-    description: 'Lorem ipsum dolor sit amet consectetur. Cras in eget enim diam. Faucibus purus maecenas faucibus.',
+    description: 'Add your daily essentials to the cart in seconds with a smooth and simple shopping experience.',
   },
   {
     icon: ShoppingGirlIcon,
     title: 'Best Rating',
-    description: 'Lorem ipsum dolor sit amet consectetur. Cras in eget enim diam. Faucibus purus maecenas faucibus.',
+    description: 'Get your groceries delivered to your doorstep quickly, safely, and right on time.',
   },
 ];
 export const ACCOUNT_TYPE_DATA = [
   {
     icon: UserCircleIcon,
     title: 'Customer',
-    description: 'Lorem ipsum dolor sit amet consectetur. Cras in eget enim diam. Faucibus purus maecenas faucibus.',
+    description: 'Browse stores, place orders, and track delivery in real time.',
   },
   {
     icon: HomeCircleIcon,
     title: 'Grocery owner',
-    description: 'Lorem ipsum dolor sit amet consectetur. Cras in eget enim diam. Faucibus purus maecenas faucibus.',
+    description: 'Manage your store, update products, and fulfill customer orders efficiently.',
   },
   {
     icon: CarCircleIcon,
     title: 'Goer (Driver)',
-    description: 'Lorem ipsum dolor sit amet consectetur. Cras in eget enim diam. Faucibus purus maecenas faucibus.',
+    description: 'Accept delivery requests and earn by delivering groceries to customers.',
   },
 ];
 

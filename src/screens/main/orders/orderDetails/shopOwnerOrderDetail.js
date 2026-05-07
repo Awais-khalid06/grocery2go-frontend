@@ -219,7 +219,7 @@ const ShopOwnerOrderDetail = () => {
             Rider Arrived
           </AppText>
           <AppText greyText style={[orderDetailStyles.textCenter, orderDetailStyles.marginTopBottom]}>
-            Lorem ipsum dolor sit amet consectetur. Interdum tempor nisi metus vulputate.
+            Your rider has reached the location. Please complete the delivery payment to finish this order.
           </AppText>
           <AppButton
             title={'Pay Delivery Charges'}

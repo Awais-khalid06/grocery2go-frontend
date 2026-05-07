@@ -36,6 +36,9 @@ const AccountType = ({navigation}) => {
           <AppText fontFamily={FONTS.medium} fontSize={18} primary>
             Choose An Account Type
           </AppText>
+          <AppText style={accountTypeStyles.subtitle}>
+            Select the role that best matches how you want to use Grocery2Go.
+          </AppText>
           <View style={accountTypeStyles.accountsContainer}>
             {ACCOUNT_TYPE_DATA.map((account, index) => (
               <IconCard isSelected={selected === account.title} key={index} item={account} onPress={() => setSelected(account.title)} />

@@ -211,7 +211,7 @@ const UserListOrderDetail = ({navigation, route}) => {
 
       <SuccessModal
         heading={'Payment Done'}
-        description={'Lorem ipsum dolor sit amet'}
+        description={'Your payment was successful and your order has been completed.'}
         buttonTitle={'Back To Home'}
         onPressButton={() => {
           setPaymentDoneModalShow(false);

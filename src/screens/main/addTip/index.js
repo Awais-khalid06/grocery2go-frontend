@@ -13,7 +13,7 @@ const AddTip = () => {
     <Screen>
       <Header title={'Add Tip'} />
       <AppScrollView>
-        <AppText greyText>Lorem ipsum dolor sit amet consectetur. Urna suscipit ornare leo sit augue. Posuere bibendum phasellus hac tincidunt lorem malesuada. Id.</AppText>
+        <AppText greyText>Add a tip to thank your rider for timely delivery and great service.</AppText>
 
         <View style={tipStyles.itemsContainer}>
           {TIPS.map((tip, index) => (

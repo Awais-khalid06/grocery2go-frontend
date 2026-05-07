@@ -263,7 +263,7 @@ const UserOrderDetail = ({}) => {
             Rider Arrived
           </AppText>
           <AppText greyText style={[orderDetailStyles.textCenter, orderDetailStyles.marginTopBottom]}>
-            Lorem ipsum dolor sit amet consectetur. Interdum tempor nisi metus vulputate.
+            Your rider has arrived. Please pay the delivery charges to complete your order.
           </AppText>
           <AppButton title={'Pay Delivery Charges'} onPress={handlePayDeliveryCharges} />
         </View>

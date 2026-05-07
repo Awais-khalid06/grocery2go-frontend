@@ -26,7 +26,7 @@ const ManageStock = ({navigation, route}) => {
       <Loader isLoading={isLoading} />
       <AppScrollView>
         <View style={[globalStyles.inputsGap, globalStyles.flex1]}>
-          <AppText>Lorem ipsum dolor sit amet consectetur. Eget urna neque pellentesque eu dui.</AppText>
+          <AppText>Update the available quantity to keep your inventory accurate for incoming orders.</AppText>
           <AppTextInput keyboardType="number-pad" placeholder="400" onChangeText={setQuantity} />
         </View>
 
