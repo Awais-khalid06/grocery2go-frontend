@@ -55,7 +55,6 @@ export const ownerCompleteProfileValidations = data => {
   if (!data.image) return ShowMessage('Profile image is required');
   else if (!data.groceryShopName) return ShowMessage('Grocery shop name is required');
   else if (!data.address) return ShowMessage('Address is required');
-  else if (!data.salesTax) return ShowMessage('Sales tax is required');
   else if (!data.openingTime) return ShowMessage('Shop opening time is required');
   else if (!data.closingTime) return ShowMessage('Shop closing time is required');
   else if (!data.countryValue) return ShowMessage('Country is required');
@@ -78,6 +77,7 @@ export const addProductValidations = data => {
   if (data.productImages.length === 0) return ShowMessage('At least 1 product image is required');
   else if (!data.productName) return ShowMessage('Product name is required');
   else if (!data.price) return ShowMessage('Product price is required');
+  else if (!data.salesTax && data.salesTax !== 0 && data.salesTax !== '0') return ShowMessage('Product sales tax is required');
   else if (!data.shopType) return ShowMessage('Please select shop type');
   else if (!data.categoryName) return ShowMessage('Please select category of product');
   else if (!data.unitTypeValue) return ShowMessage('Please select product measure unit');

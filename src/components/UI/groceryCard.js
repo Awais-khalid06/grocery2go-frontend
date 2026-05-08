@@ -32,7 +32,12 @@ const GroceryCard = ({item, style, onPress, isHeartComponent, onPressPlusIcon, o
       </View>
 
       <View style={styles.amountAddcontainer}>
-        <AppText>${item.price}</AppText>
+        <View>
+          <AppText>${item.price}</AppText>
+          <AppText fontSize={10} greyText>
+            Tax: {item?.salesTax || 0}%
+          </AppText>
+        </View>
         <PlusPrimaryIcon width={30} height={30} onPress={() => onPressPlusIcon?.(item)} />
       </View>
     </Pressable>

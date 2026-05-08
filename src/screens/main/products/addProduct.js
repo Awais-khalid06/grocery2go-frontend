@@ -41,6 +41,7 @@ const AddProduct = ({navigation, route}) => {
     productImages: [],
     productName: '',
     price: '',
+    salesTax: '',
     volume: '0',
     manufacturedBy: '',
     quantity: '0',
@@ -70,6 +71,7 @@ const AddProduct = ({navigation, route}) => {
         productImages: product.productImages.map(img => ({uri: img, s3Url: true})),
         productName: product.productName,
         price: product?.price?.toString(),
+        salesTax: product?.salesTax?.toString?.() || '',
         volume: product.volume?.toString(),
         manufacturedBy: product.manufacturedBy,
         quantity: product.quantity.toString(),
@@ -208,6 +210,7 @@ const AddProduct = ({navigation, route}) => {
         <View style={globalStyles.inputsGap}>
           <AppTextInput placeholder="Product Name" onChangeText={text => handleChangeText(text, 'productName')} value={formData.productName} />
           <AppTextInput placeholder="Price" onChangeText={text => handleChangeText(text, 'price')} keyboardType={'number-pad'} value={formData.price} />
+          <AppTextInput placeholder="Sales Tax %" onChangeText={text => handleChangeText(text, 'salesTax')} keyboardType={'number-pad'} value={formData.salesTax} />
 
           <DropDownPicker
             zIndex={10}

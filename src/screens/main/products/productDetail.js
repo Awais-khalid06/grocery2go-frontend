@@ -145,6 +145,9 @@ const ProductDetail = ({route, navigation}) => {
               <AppText greyText fontSize={12}>
                 {product.volume}, price
               </AppText>
+              <AppText greyText fontSize={12}>
+                Sales Tax: {product?.salesTax || 0}%
+              </AppText>
             </View>
             {isCustomer && (
               <Pressable onPress={handleLikeUnlike} disabled={isLikeLoading} style={{opacity: isLikeLoading ? 0.5 : 1}}>
@@ -184,6 +187,12 @@ const ProductDetail = ({route, navigation}) => {
                 <AppText fontSize={12} fontFamily={FONTS.medium}>
                   {CURRENCY_UNIT}
                   {product?.price}
+                </AppText>
+              </View>
+              <View style={productDetailStyles.rowItem}>
+                <AppText>Sales Tax</AppText>
+                <AppText fontSize={12} fontFamily={FONTS.medium}>
+                  {product?.salesTax || 0}%
                 </AppText>
               </View>
               <View style={productDetailStyles.rowItem}>

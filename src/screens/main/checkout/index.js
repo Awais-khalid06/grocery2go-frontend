@@ -55,24 +55,10 @@ const Checkout = ({navigation, route}) => {
   ];
   // console.log('cartItems: ', JSON.stringify(myCart, null, 2));
   function calculateTotalTax(cartItems) {
-    const shopWiseTotal = {};
-
-    // Step 1: Group items by shop and calculate subtotal for each shop
-    cartItems.forEach(item => {
-      const shopName = item?.shopDetails?.shopTitle || item?.shopTitle;
-      const salesTaxRate = (item?.shopDetails?.salesTax || item?.salesTax) / 100; // Convert % to decimal
-
-      if (!shopWiseTotal[shopName]) {
-        shopWiseTotal[shopName] = {total: 0, taxRate: salesTaxRate};
-      }
-
-      shopWiseTotal[shopName].total += item.price * item.itemQuantity;
-    });
-
-    // Step 2: Calculate tax for each shop
     let totalTax = 0;
-    Object.values(shopWiseTotal).forEach(({total, taxRate}) => {
-      totalTax += total * taxRate;
+    cartItems.forEach(item => {
+      const salesTaxRate = Number(item?.salesTax || 0) / 100;
+      totalTax += Number(item?.price || 0) * salesTaxRate;
     });
 
     return totalTax;

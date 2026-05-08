@@ -29,6 +29,9 @@ const CartItem = ({item, onPress, isCrossIcon = true, isCounter = true, isQuatit
             <AppText fontSize={12} greyText>
               {item?.volume}, Price
             </AppText>
+            <AppText fontSize={10} greyText>
+              Sales Tax: {item?.salesTax || 0}%
+            </AppText>
           </View>
           {type === 'PRODUCT' && (
             <Pressable onPress={() => setDotMenuShow(prev => !prev)} style={styles.crossIcon}>

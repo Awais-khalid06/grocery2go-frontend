@@ -45,7 +45,6 @@ const CompleteProfile = ({navigation, route}) => {
   const [countryItems, setCountryItems] = useState(STRIPE_COUNTRIES);
   const [countryDropdownOpen, setCountryDropdownOpen] = useState(false);
   const [countryValue, setCountryValue] = useState('United States');
-  const [salesTax, setSalesTax] = useState('');
 
   useEffect(() => {
     if (isEditMode && user) {
@@ -65,7 +64,6 @@ const CompleteProfile = ({navigation, route}) => {
       setImage({uri: data.image});
       setAccountNumber(data?.bankAccountInfo?.bankAccountId);
       setBankName(data?.bankAccountInfo?.bankName);
-      setSalesTax(data?.salesTax.toString());
       if (data?.country) setCountryValue(data.country);
     };
     const shopId = user.shopId;
@@ -82,11 +80,10 @@ const CompleteProfile = ({navigation, route}) => {
     const trimmedCountry = countryValue?.trim?.() || '';
     const trimmedVehiclePermit = vehiclePermit?.trim?.() || '';
     const trimmedShopName = groceryShopName?.trim?.() || '';
-    const normalizedSalesTax = salesTax?.toString()?.trim?.() || '';
 
     let data = {};
 
-    if (isGroceryOwner) data = {image, countryValue: trimmedCountry, openingTime, closingTime, groceryShopName: trimmedShopName, address: trimmedAddress, salesTax: normalizedSalesTax};
+    if (isGroceryOwner) data = {image, countryValue: trimmedCountry, openingTime, closingTime, groceryShopName: trimmedShopName, address: trimmedAddress};
     else if (isDriver) data = {image, countryValue: trimmedCountry, vehiclePermit: trimmedVehiclePermit, address: trimmedAddress};
 
     console.log('CompleteProfile validation input:', data);
@@ -115,7 +112,6 @@ const CompleteProfile = ({navigation, route}) => {
           ...commonData,
           shopTitle: trimmedShopName,
           operatingHours: `${openingTime.toISOString()}to${closingTime.toISOString()}`,
-          salesTax: Number(normalizedSalesTax),
         };
       }
 
@@ -253,7 +249,6 @@ const CompleteProfile = ({navigation, route}) => {
                     }}
                   />
 
-                  <AppTextInput placeholder="Sales Tax %" onChangeText={setSalesTax} value={salesTax} keyboardType={'number-pad'} />
                   <Pressable onPress={() => setIsOpeningTimeModalShow(true)} style={profileStyles.timeContainer}>
                     <AppText greyText>{formatedOpeningTime}</AppText>
                     <ChevronIcon height={18} width={18} />
