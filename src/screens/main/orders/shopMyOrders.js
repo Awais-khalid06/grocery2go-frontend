@@ -1,5 +1,5 @@
 import {View, FlatList, Image, Pressable} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {AppText, FlatListEmptyComponent, Header, Loader, Screen} from '../../../components';
 import {orderDetailStyles} from '../styles';
 import {FONTS} from '../../../utils/theme';
@@ -12,24 +12,27 @@ import {API} from '../../../network/Environment';
 import {getUserFullName, onAPIError} from '../../../helpers';
 import {useSelector} from 'react-redux';
 import {userSelector} from '../../../redux/selectors';
+import {useFocusEffect} from '@react-navigation/native';
 
 const ShopMyOrders = ({navigation}) => {
   const [orders, setOrders] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const user = useSelector(userSelector);
 
-  useEffect(() => {
-    getOrders();
-  }, []);
-
-  const getOrders = () => {
+  const getOrders = useCallback(() => {
     const onSuccess = response => {
       // console.log('RES::', JSON.stringify(response));
       setOrders(response.data);
     };
 
     callApi(API_METHODS.GET, `${API.getShopAcceptedOrders}`, null, onSuccess, onAPIError, setIsLoading);
-  };
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      getOrders();
+    }, [getOrders]),
+  );
 
   const handlePressOrder = item => {
     navigation.navigate(ROUTES.OrderDetails, {orderId: item._id});

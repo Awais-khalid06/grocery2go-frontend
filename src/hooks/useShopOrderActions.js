@@ -15,8 +15,11 @@ const useShopOrderActions = () => {
     }
 
     const orderId = item._id;
+    const response = await commonAPI.shopAcceptRejectOrder({orderId, action});
+    if (!response?.success) return;
+
     dispatch(shopOwnerOrderActions.removeOrderFromNewOrderList(orderId));
-    commonAPI.shopAcceptRejectOrder({orderId, action});
+    commonAPI.getShopNewOrders({dispatch});
 
     if (hasGoBack) navigation.goBack();
   };

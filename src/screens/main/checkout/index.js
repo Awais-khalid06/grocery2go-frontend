@@ -1,31 +1,31 @@
-import {View} from 'react-native';
-import React, {useState} from 'react';
-import {AppButton, AppScrollView, AppText, AppTextInput, Header, Loader, Screen, ShowMessage} from '../../../components';
+import { View } from 'react-native';
+import React, { useState } from 'react';
+import { AppButton, AppScrollView, AppText, AppTextInput, Header, Screen } from '../../../components';
 import CartItem from '../../../components/UI/cartItem';
-import {FONTS} from '../../../utils/theme';
+import { FONTS } from '../../../utils/theme';
 import globalStyles from '../../../../globalStyles';
-import {cartStyles} from '../styles';
-import {ChevronIcon} from '../../../assets/icons';
+import { cartStyles } from '../styles';
+import { ChevronIcon } from '../../../assets/icons';
 import DatePicker from 'react-native-date-picker';
-import {ROUTES} from '../../../utils/constants';
-import {useSelector} from 'react-redux';
-import {customerCartSelector, userSelector} from '../../../redux/selectors';
+import { ROUTES } from '../../../utils/constants';
+import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { customerCartSelector, userSelector } from '../../../redux/selectors';
 import dayjs from 'dayjs';
-import {API_METHODS, callApi} from '../../../network/NetworkManger';
-import {API} from '../../../network/Environment';
-import {onAPIError} from '../../../helpers';
-import useCustomerCart from '../../../hooks/useCustomerCart';
-import {validateDeliveryTime as deliveryTimeValidation} from '../../../utils/validations';
-import commonAPI from '../../../network/commonAPI';
+import { API_METHODS, callApi } from '../../../network/NetworkManger';
+import { API } from '../../../network/Environment';
+import { onAPIError } from '../../../helpers';
+import { validateDeliveryTime as deliveryTimeValidation } from '../../../utils/validations';
 import usePaymentSheetHandler from '../../../hooks/usePaymentSheetHandler';
+import { customerCartActions } from '../../../redux/slices/customer/customerCart';
 
-const Checkout = ({navigation, route}) => {
+const Checkout = ({ navigation, route }) => {
   const currentDate = new Date();
   const after2HourDate = new Date(currentDate.setHours(currentDate.getHours() + 2));
   const params = route?.params;
 
   const user = useSelector(userSelector);
-  const {handleResetCart} = useCustomerCart();
+  const dispatch = useDispatch();
   const initializeAndPresentPaymentSheet = usePaymentSheetHandler();
   const [isDeliveryModalShow, setIsDeliveryModalShow] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -46,12 +46,12 @@ const Checkout = ({navigation, route}) => {
   const formattedTotalPayment = Number(totalPayment).toFixed(2);
 
   const ORDER_SUMMARY = [
-    {title: 'Items Total', amount: `$${Number(cartTotal)?.toFixed?.(2)}`},
-    {title: 'Delivery fee', amount: `$${deliveryFee}`},
-    {title: 'Service fee', amount: `$${serviceFee}`},
-    {title: 'Admin Fee', amount: `$${adminFee}`},
-    {title: 'Sales Tax', amount: `$${salesTax.toFixed(2)}`},
-    {title: 'Total Payment', amount: `$${formattedTotalPayment}`},
+    { title: 'Items Total', amount: `$${Number(cartTotal)?.toFixed?.(2)}` },
+    { title: 'Delivery fee', amount: `$${deliveryFee}` },
+    { title: 'Service fee', amount: `$${serviceFee}` },
+    { title: 'Admin Fee', amount: `$${adminFee}` },
+    { title: 'Sales Tax', amount: `$${salesTax.toFixed(2)}` },
+    { title: 'Total Payment', amount: `$${formattedTotalPayment}` },
   ];
   // console.log('cartItems: ', JSON.stringify(myCart, null, 2));
   function calculateTotalTax(cartItems) {
@@ -82,42 +82,55 @@ const Checkout = ({navigation, route}) => {
   };
 
   const handlePayNow = () => {
+    console.log('[Checkout] Pay Now clicked', {
+      cartItemsCount: myCartList?.length || 0,
+      totalPayment: formattedTotalPayment,
+    });
+
     const isValidate = deliveryTimeValidation(deliveryTime);
     if (!isValidate) return;
 
     const onSuccess = async response => {
+      console.log('[Checkout] cart/verify-payment success response', response);
       if (response.success) {
-        const {customer, clientSecret, id, metadata} = response?.order?.paymentIntent || {};
-        const sheetData = {customerId: customer, clientSecret: clientSecret, paymentIntentId: id, orderId: metadata?.orderId};
+        const { customer, clientSecret, id, metadata } = response?.order?.paymentIntent || {};
+        const sheetData = { customerId: customer, clientSecret: clientSecret, paymentIntentId: id, orderId: metadata?.orderId };
+        console.log('[Checkout] sheetData prepared', {
+          hasCustomerId: !!sheetData.customerId,
+          hasClientSecret: !!sheetData.clientSecret,
+          hasPaymentIntentId: !!sheetData.paymentIntentId,
+          hasOrderId: !!sheetData.orderId,
+        });
 
         const onSuccessPayment = async () => {
-          const verifyResponse = await commonAPI.verifyOrderPayment({
-            paymentIntentId: sheetData?.paymentIntentId,
-            orderId: sheetData?.orderId,
-          });
-
-          if (verifyResponse?.success) {
-            navigation.replace(ROUTES.OrderAccepted);
-            handleResetCart();
-          }
+          console.log('[Checkout] onSuccessPayment callback fired');
+          dispatch(customerCartActions.resetCartItems());
+          console.log('[Checkout] cart reset dispatched, navigating back');
+          navigation.goBack();
         };
 
-        initializeAndPresentPaymentSheet(sheetData, onSuccessPayment);
+        const paymentSheetResult = await initializeAndPresentPaymentSheet(sheetData, onSuccessPayment);
+        console.log('[Checkout] payment sheet flow result', paymentSheetResult);
       }
     };
 
+    const onCheckoutError = error => {
+      console.log('[Checkout] cart/verify-payment error response', error);
+      onAPIError(error);
+    };
+
     const deliveryLocation = getDeliveryLocation();
-    const data = {deliveryLocation, deliveryTime, salesTax, cart: {products: myCartList.map(i => ({grocery: i._id, quantity: i.itemQuantity}))}};
-    callApi(API_METHODS.POST, API.confirmCheckout, data, onSuccess, onAPIError, setIsLoading);
+    const data = { deliveryLocation, deliveryTime, salesTax, cart: { products: myCartList.map(i => ({ grocery: i._id, quantity: i.itemQuantity })) } };
+    console.log('[Checkout] cart/verify-payment request payload', data);
+    callApi(API_METHODS.POST, API.confirmCheckout, data, onSuccess, onCheckoutError, setIsLoading);
   };
 
   return (
     <Screen>
       <Header title={'Check Out'} />
-      <Loader isLoading={isLoading} />
 
       <AppScrollView>
-        <View style={{gap: 5}}>
+        <View style={{ gap: 5 }}>
           <AppText fontFamily={FONTS.medium}>Total item (4)</AppText>
           <View style={globalStyles.inputsGap}>
             {myCartList.map((item, index) => (
@@ -126,7 +139,7 @@ const Checkout = ({navigation, route}) => {
           </View>
         </View>
 
-        <View style={{marginTop: 20, gap: 5}}>
+        <View style={{ marginTop: 20, gap: 5 }}>
           <AppText fontFamily={FONTS.semiBold}>Order Summary</AppText>
 
           <View style={cartStyles.orderSummaryContainer}>
@@ -145,7 +158,7 @@ const Checkout = ({navigation, route}) => {
           <AppTextInput onPressRightIcon={() => setIsDeliveryModalShow(true)} editable={false} RightIcon={ChevronIcon} placeholder="Delivery time" value={dayjs(deliveryTime).format('hh:mm A')} />
         </View>
 
-        <AppButton title={'Pay Now'} containerStyle={globalStyles.bottomButton} onPress={handlePayNow} />
+        <AppButton title={isLoading ? 'Processing...' : 'Pay Now'} isLoading={isLoading} disabled={isLoading} containerStyle={globalStyles.bottomButton} onPress={handlePayNow} />
       </AppScrollView>
 
       <DatePicker

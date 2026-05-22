@@ -1,5 +1,6 @@
 import {FlatList} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useState} from 'react';
+import {useFocusEffect} from '@react-navigation/native';
 import {AppText, FlatListEmptyComponent, Header, Loader, OrderCard, Screen} from '../../../components';
 import globalStyles from '../../../../globalStyles';
 import {FONTS} from '../../../utils/theme';
@@ -12,17 +13,19 @@ const OrderTracking = ({navigation}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [orders, setOrders] = useState([]);
 
-  useEffect(() => {
-    getNewOrders();
-  }, []);
-
-  const getNewOrders = () => {
+  const getNewOrders = useCallback(() => {
     const onSuccess = response => {
       // console.log('ORDER TRACKINGS:', JSON.stringify(response));
       setOrders(response.data);
     };
     callApi(API_METHODS.GET, API.userNewOrders, null, onSuccess, onAPIError, setIsLoading);
-  };
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      getNewOrders();
+    }, [getNewOrders]),
+  );
 
   const handlePressItem = item => {
     if (item?.orderType === 'listOrder') return navigation.navigate(ROUTES.UserListOrderDetail, {orderId: item?._id});

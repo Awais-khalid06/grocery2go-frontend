@@ -1,5 +1,5 @@
 import {FlatList} from 'react-native';
-import React from 'react';
+import React, {useCallback} from 'react';
 import {FlatListEmptyComponent, Header, OrderActionCard, Screen} from '../../../components';
 import globalStyles from '../../../../globalStyles';
 import {ROUTES} from '../../../utils/constants';
@@ -7,12 +7,19 @@ import {shopOwnerNewOrdersSelector, userSelector} from '../../../redux/selectors
 import {useDispatch, useSelector} from 'react-redux';
 import commonAPI from '../../../network/commonAPI';
 import {useShopOrderActions} from '../../../hooks';
+import {useFocusEffect} from '@react-navigation/native';
 
 const ShopNewOrders = ({navigation}) => {
   const dispatch = useDispatch();
   const user = useSelector(userSelector);
   const {handleAcceptRejectOrder} = useShopOrderActions();
   const orders = useSelector(shopOwnerNewOrdersSelector);
+
+  useFocusEffect(
+    useCallback(() => {
+      commonAPI.getShopNewOrders({dispatch});
+    }, [dispatch]),
+  );
 
   const handlePressNewOrder = item => {
     navigation.navigate(ROUTES.OrderDetails, {orderId: item?._id, orderType: 'NEW'});

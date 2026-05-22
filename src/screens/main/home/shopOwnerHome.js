@@ -1,11 +1,11 @@
 import {View, Text, Pressable, RefreshControl} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {AppScrollView, AppText, AppTextInput, Loader, OrderActionCard, Screen} from '../../../components';
 import {homeStyles} from '../styles';
 import globalStyles from '../../../../globalStyles';
 import {ArrowDownPrimaryIcon, BellIcon, ChatGrayIcon, ClockPrimaryIcon, LogoIcon, SearchIcon, StatPrimaryIcon, TickPrimaryIcon} from '../../../assets/icons';
 import {IconWrapper} from './userHome';
-import {useNavigation} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {COLORS, FONTS} from '../../../utils/theme';
 import {ROUTES, TABS} from '../../../utils/constants';
 import {useDispatch, useSelector} from 'react-redux';
@@ -25,22 +25,24 @@ const ShopOwnerHome = () => {
   const orders = useSelector(shopOwnerNewOrdersSelector);
   const [stats, setStats] = useState({});
 
-  useEffect(() => {
-    getNewOrders();
-    getShopStats();
-  }, []);
-
-  const getShopStats = () => {
+  const getShopStats = useCallback(() => {
     const onSuccess = response => {
       setStats(response?.data);
     };
 
     callApi(API_METHODS.GET, API.shopStats, null, onSuccess, onAPIError);
-  };
+  }, []);
 
-  const getNewOrders = async () => {
+  const getNewOrders = useCallback(async () => {
     commonAPI.getShopNewOrders({dispatch, setIsLoading});
-  };
+  }, [dispatch]);
+
+  useFocusEffect(
+    useCallback(() => {
+      getNewOrders();
+      getShopStats();
+    }, [getNewOrders, getShopStats]),
+  );
 
   const handlePullToRefresh = () => {
     getNewOrders();
