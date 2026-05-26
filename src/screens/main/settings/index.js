@@ -1,10 +1,9 @@
-import {View, Text, Image} from 'react-native';
+import {ActivityIndicator, Image, View} from 'react-native';
 import React, {useState} from 'react';
 import {AppButton, AppModal, AppScrollView, AppText, Header, LabelWithRightChevron, Loader, Screen} from '../../../components';
 import {orderDetailStyles, settingsStyles} from '../styles';
-import {AvatarImage} from '../../../assets/images';
-import {EditPencilIcon, LogoutIcon} from '../../../assets/icons';
-import {FONTS} from '../../../utils/theme';
+import {LogoutIcon} from '../../../assets/icons';
+import {COLORS, FONTS} from '../../../utils/theme';
 import {ROUTES, STACKS} from '../../../utils/constants';
 import globalStyles from '../../../../globalStyles';
 import {useDispatch, useSelector} from 'react-redux';
@@ -18,6 +17,7 @@ const Settings = ({navigation}) => {
   const user = useSelector(userSelector) || {};
   const {isGroceryOwner, isDriver} = useAccountType();
   const [isLogoutModalShow, setIsLogoutModalShow] = useState(false);
+  const [isProfileImageLoading, setIsProfileImageLoading] = useState(false);
 
   const handleLogout = () => {
     setIsLogoutModalShow(false);
@@ -34,7 +34,24 @@ const Settings = ({navigation}) => {
 
       <AppScrollView>
         <View style={settingsStyles.profileContainer}>
-          {myImageURI && <Image source={{uri: myImageURI}} style={settingsStyles.profilePic} />}
+          <View style={settingsStyles.profileImageWrapper}>
+            {myImageURI ? (
+              <Image
+                source={{uri: myImageURI}}
+                style={settingsStyles.profilePic}
+                onLoadStart={() => setIsProfileImageLoading(true)}
+                onLoadEnd={() => setIsProfileImageLoading(false)}
+                onError={() => setIsProfileImageLoading(false)}
+              />
+            ) : (
+              <View style={settingsStyles.profilePic} />
+            )}
+            {myImageURI && isProfileImageLoading ? (
+              <View style={settingsStyles.profileImageLoaderOverlay}>
+                <ActivityIndicator color={COLORS.primary} />
+              </View>
+            ) : null}
+          </View>
           <AppText style={settingsStyles.personnameText}>{myName}</AppText>
           <AppText style={settingsStyles.usernameText}>{myEmail}</AppText>
           {/* <View style={[orderDetailStyles.rowElement, {gap: 5, marginTop: 10}]}>

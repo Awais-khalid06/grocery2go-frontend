@@ -8,6 +8,8 @@ import {ROUTES, STACKS} from '../utils/constants';
 import {API} from './Environment';
 import {API_METHODS, callApi} from './NetworkManger';
 
+const getUserFromProfileResponse = response => response?.data?.user || response?.user || null;
+
 const sendOTP = async data => {
   let apiResponse = {};
 
@@ -91,11 +93,13 @@ const logout = async (dispatch, navigation) => {
   callApi(API_METHODS.POST, API.logout, {device: await getDeviceIdAndFCM()}, onSuccess, onError);
 };
 
-const updateUserProfile = async data => {
+const updateUserProfile = async (data, dispatch) => {
   let apiResponse = {};
 
   const onSuccess = response => {
     apiResponse = response;
+    const user = getUserFromProfileResponse(response);
+    if (response?.success && user && dispatch) dispatch(authActions.setUser(user));
   };
 
   const onError = error => (apiResponse = error);
@@ -125,15 +129,22 @@ const getProductCategories = async dispatch => {
 };
 
 const updateOwnerProfile = async (data, dispatch) => {
+  let apiResponse = {};
+
   const onSuccess = response => {
+    apiResponse = response;
     if (response.success) {
-      const user = response.data.user;
+      const user = getUserFromProfileResponse(response);
       console.log('UPDATE PROFILE:', response);
       if (user) dispatch(authActions.setUser(user));
     }
   };
 
-  await callApi(API_METHODS.PATCH, API.ownerProfileUpdate, data, onSuccess, onAPIError);
+  const onError = error => (apiResponse = error);
+
+  await callApi(API_METHODS.PATCH, API.ownerProfileUpdate, data, onSuccess, onError);
+
+  return apiResponse;
 };
 
 const getOneProductDetail = async productId => {

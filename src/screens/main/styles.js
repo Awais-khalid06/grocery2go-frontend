@@ -242,6 +242,16 @@ export const notificationStyles = StyleSheet.create({
 
 export const settingsStyles = StyleSheet.create({
   profilePic: {width: 100, height: 100, borderRadius: 100, backgroundColor: COLORS.grey1},
+  profileImageWrapper: {width: 100, height: 100, borderRadius: 100, alignItems: 'center', justifyContent: 'center', overflow: 'hidden'},
+  profileImageLoaderOverlay: {
+    position: 'absolute',
+    width: 100,
+    height: 100,
+    borderRadius: 100,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.45)',
+  },
   personnameText: {color: COLORS.black, marginTop: 6, fontFamily: FONTS.medium},
   usernameText: {fontSize: 12, color: COLORS.grey4, marginTop: isIOS ? 10 : 5},
   profileContainer: {alignItems: 'center', marginTop: 20, marginBottom: 15},
@@ -258,6 +268,15 @@ export const settingsStyles = StyleSheet.create({
 export const profileStyles = StyleSheet.create({
   cameraIcon: {position: 'absolute', bottom: 5, right: 5},
   avatarContainer: {alignSelf: 'center', marginTop: 20, marginBottom: 10, borderWidth: 1, borderColor: COLORS.primary, borderRadius: 100},
+  avatarLoaderOverlay: {
+    position: 'absolute',
+    width: 100,
+    height: 100,
+    borderRadius: 100,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.45)',
+  },
   image: {width: 100, height: 100, borderRadius: 100},
   profileCreatedTitle: {fontFamily: FONTS.semiBold, fontSize: 18, marginVertical: 20},
   profileCreatedDesc: {textAlign: 'center', width: '75%'},

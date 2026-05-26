@@ -24,8 +24,18 @@ const HelpCenter = ({navigation}) => {
 
   const getFaqs = () => {
     const onSuccess = response => {
-      // console.log('rES:', JSON.stringify(response));
-      setFaqs(response.data.data);
+      console.log('rES:', JSON.stringify(response));
+      const payload = response?.data;
+      const parsedFaqs = Array.isArray(payload)
+        ? payload
+        : Array.isArray(payload?.paginatedArray)
+        ? payload.paginatedArray
+        : Array.isArray(response?.faqs)
+        ? response.faqs
+        : [];
+
+      setFaqs(parsedFaqs);
+      setSelectedFaqIndex(null);
     };
 
     callApi(API_METHODS.GET, API.faqs, null, onSuccess, onAPIError, setIsLoading);
@@ -56,21 +66,36 @@ const HelpCenter = ({navigation}) => {
         </ScrollView> */}
 
         <View style={[globalStyles.inputsGap, {marginTop: 30}]}>
-          {faqs?.map?.((item, index) => (
-            <Pressable onPress={() => setSelectedFaqIndex(index)} key={index} style={helpCenterStyles.faqItem}>
-              <View style={helpCenterStyles.titleAndIcon}>
-                <AppText style={globalStyles.flex1} fontFamily={FONTS.medium} fontSize={12}>
-                  {item?.question}
-                </AppText>
-                <ChevronIcon />
-              </View>
-              {selectedFaqIndex === index && (
-                <AppText greyText fontSize={12}>
-                  {item?.answer}
-                </AppText>
-              )}
-            </Pressable>
-          ))}
+          {!faqs?.length && !isLoading ? (
+            <AppText greyText fontSize={12}>
+              No FAQs available right now.
+            </AppText>
+          ) : null}
+
+          {faqs?.map?.((item, index) => {
+            const isOpen = selectedFaqIndex === index;
+
+            return (
+              <Pressable
+                onPress={() =>
+                  setSelectedFaqIndex(prevIndex => (prevIndex === index ? null : index))
+                }
+                key={item?._id || index}
+                style={helpCenterStyles.faqItem}>
+                <View style={helpCenterStyles.titleAndIcon}>
+                  <AppText style={globalStyles.flex1} fontFamily={FONTS.medium} fontSize={12}>
+                    {item?.question}
+                  </AppText>
+                  <ChevronIcon style={{transform: [{rotate: isOpen ? '180deg' : '0deg'}]}} />
+                </View>
+                {isOpen && (
+                  <AppText greyText fontSize={12}>
+                    {item?.answer}
+                  </AppText>
+                )}
+              </Pressable>
+            );
+          })}
         </View>
       </AppScrollView>
 
