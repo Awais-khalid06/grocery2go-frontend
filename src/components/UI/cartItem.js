@@ -19,6 +19,27 @@ const CartItem = ({item, onPress, isCrossIcon = true, isCounter = true, isQuatit
   const itemPrice = item?.price?.toFixed?.(2);
   const itemQuantity = item?.itemQuantity ? item?.itemQuantity : item?.quantity;
 
+  const getProductUnitInfo = product => {
+    const explicitUnitType = product?.unitTypeValue;
+    const quantityValue = product?.quantity;
+    const volumeValue = product?.volume;
+    const parsedQuantity = Number(quantityValue || 0);
+
+    let unitType = explicitUnitType;
+    if (!unitType) {
+      if (parsedQuantity > 0) unitType = 'quantity';
+      else if (volumeValue) unitType = 'volume';
+    }
+
+    if (unitType === 'weight') return {label: 'Weight', value: volumeValue || '-'};
+    if (unitType === 'volume') return {label: 'Volume', value: volumeValue || '-'};
+    if (unitType === 'quantity') return {label: 'Quantity', value: quantityValue ?? '-'};
+    return {label: 'Volume', value: volumeValue || '-'};
+  };
+
+  const unitInfo = getProductUnitInfo(item);
+  const subtitleText = type === 'PRODUCT' ? `${unitInfo.label}: ${unitInfo.value}` : `${item?.volume || '-'}`;
+
   return (
     <Pressable style={styles.container} onPress={() => onPress?.(item)}>
       <Image source={{uri: item?.productImages?.[0]}} style={styles.image} />
@@ -27,7 +48,7 @@ const CartItem = ({item, onPress, isCrossIcon = true, isCounter = true, isQuatit
           <View style={globalStyles.flex1}>
             <AppText fontFamily={FONTS.medium}>{item?.productName}</AppText>
             <AppText fontSize={12} greyText>
-              {item?.volume}, Price
+              {subtitleText}
             </AppText>
             <AppText fontSize={10} greyText>
               Sales Tax: {item?.salesTax || 0}%

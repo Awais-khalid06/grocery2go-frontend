@@ -84,7 +84,13 @@ const Settings = ({navigation}) => {
               Are you sure you want to log out?
             </AppText>
             <View style={settingsStyles.logoutButtonContainer}>
-              <AppButton title={'Logout'} containerStyle={{width: '40%', height: 35}} onPress={handleLogout} transparentButton={true} />
+              <AppButton
+                title={'Logout'}
+                containerStyle={{width: '40%', height: 35, borderWidth: 1, borderColor: COLORS.primary}}
+                textStyle={{color: COLORS.red}}
+                onPress={handleLogout}
+                transparentButton={true}
+              />
               <AppButton title={'Cancel'} containerStyle={{width: '40%', height: 35}} onPress={() => setIsLogoutModalShow(false)} />
             </View>
           </View>

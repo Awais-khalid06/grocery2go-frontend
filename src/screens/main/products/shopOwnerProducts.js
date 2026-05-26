@@ -62,7 +62,15 @@ const ShopOwnerProducts = ({navigation}) => {
             isQuatity={false}
             isCrossIcon={false}
             type={'PRODUCT'}
-            onPressEdit={() => navigation.navigate(ROUTES.AddProduct, {screenType: 'EDIT_MODE', productId: item?._id, shopId: user?.shopId})}
+            onPressEdit={() => {
+              console.log('SHOP_OWNER_EDIT_PRODUCT_ITEM:', item);
+              navigation.navigate(ROUTES.AddProduct, {
+                screenType: 'EDIT_MODE',
+                productId: item?._id,
+                shopId: user?.shopId,
+                item,
+              });
+            }}
           />
         )}
         contentContainerStyle={[globalStyles.flexGrow1, globalStyles.screenPadding, globalStyles.inputsGap, globalStyles.screenPaddingBottom10]}

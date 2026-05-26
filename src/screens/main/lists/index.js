@@ -1,5 +1,5 @@
 import {View, FlatList, Pressable} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {AppText, Loader, Screen} from '../../../components';
 import {NoListIcon, PlusIcon} from '../../../assets/icons';
 import {onAPIError, wp} from '../../../helpers';
@@ -12,17 +12,14 @@ import {FONTS} from '../../../utils/theme';
 import {customerListActions} from '../../../redux/slices/customer/customerList';
 import {useDispatch, useSelector} from 'react-redux';
 import {customerListsSelector} from '../../../redux/selectors';
+import {useFocusEffect} from '@react-navigation/native';
 
 const Lists = ({navigation}) => {
   const dispatch = useDispatch();
   const lists = useSelector(customerListsSelector);
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    getLists();
-  }, []);
-
-  const getLists = () => {
+  const getLists = useCallback(() => {
     const onSuccess = response => {
       if (response.success) {
         dispatch(customerListActions.setMyLists(response.data));
@@ -30,7 +27,13 @@ const Lists = ({navigation}) => {
     };
 
     callApi(API_METHODS.GET, API.getUserLists, null, onSuccess, onAPIError, setIsLoading);
-  };
+  }, [dispatch]);
+
+  useFocusEffect(
+    useCallback(() => {
+      getLists();
+    }, [getLists]),
+  );
 
   const handlePressList = item => {
     navigation.navigate(ROUTES.List, {productList: item.items, listId: item._id});

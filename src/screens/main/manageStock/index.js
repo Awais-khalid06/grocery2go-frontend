@@ -11,10 +11,13 @@ const ManageStock = ({navigation, route}) => {
 
   const handleDone = async () => {
     if (!quantity) return ShowMessage('Please add quantity');
+    if (!productId) return ShowMessage('Product ID missing');
 
     const data = {productId: productId, productDetails: {quantity}};
+    console.log('UPDATE_STOCK_PAYLOAD:', data);
     setIsLoading(true);
     const response = await commonAPI.updateProductAPI(data);
+    console.log('UPDATE_STOCK_RESPONSE:', response);
     setIsLoading(false);
 
     if (response.success) navigation.goBack();

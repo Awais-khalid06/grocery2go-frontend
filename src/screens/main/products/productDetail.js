@@ -1,5 +1,5 @@
 import {View, Image, ScrollView, Pressable} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {AppButton, AppModal, AppScrollView, AppText, Header, Loader, PaginateDots, Screen, SeperatorLine} from '../../../components';
 import {ChevronIcon, GrayHeartCircleIcon, MinusIcon, PlusIcon, RedHeartCircleIcon} from '../../../assets/icons';
 import {productDetailStyles, shopDetailStyles} from '../styles';
@@ -16,6 +16,7 @@ import {userSelector} from '../../../redux/selectors';
 import commonAPI from '../../../network/commonAPI';
 import {customerHomeActions} from '../../../redux/slices/customer/customerHome';
 import useCustomerCart from '../../../hooks/useCustomerCart';
+import {useFocusEffect} from '@react-navigation/native';
 
 const ProductDetail = ({route, navigation}) => {
   const dispatch = useDispatch();
@@ -35,19 +36,20 @@ const ProductDetail = ({route, navigation}) => {
   const isOwnerSeeProduct = screenType === 'OWNER_SEE_PRODUCT';
   const productId = params?.productId;
 
-  useEffect(() => {
-    if (productId) {
-      getProductDetails();
-    }
-  }, [productId]);
-
-  const getProductDetails = async () => {
+  const getProductDetails = useCallback(async () => {
+    if (!productId) return;
     setIsLoading(true);
     const response = await commonAPI.getOneProductDetail(productId);
 
     setIsLoading(false);
     if (response.success) setProduct(response.data);
-  };
+  }, [productId]);
+
+  useFocusEffect(
+    useCallback(() => {
+      getProductDetails();
+    }, [getProductDetails]),
+  );
 
   const handleMomentumScrollEnd = event => {
     const index = Math.floor(Math.floor(event.nativeEvent.contentOffset.x) / Math.floor(event.nativeEvent.layoutMeasurement.width));
@@ -85,6 +87,26 @@ const ProductDetail = ({route, navigation}) => {
       setIsLikeLoading(false);
     }
   };
+
+  const getProductUnitInfo = item => {
+    const explicitUnitType = item?.unitTypeValue;
+    const quantityValue = item?.quantity;
+    const volumeValue = item?.volume;
+    const parsedQuantity = Number(quantityValue || 0);
+
+    let unitType = explicitUnitType;
+    if (!unitType) {
+      if (parsedQuantity > 0) unitType = 'quantity';
+      else if (volumeValue) unitType = 'volume';
+    }
+
+    if (unitType === 'weight') return {label: 'Weight', value: volumeValue || '-'};
+    if (unitType === 'volume') return {label: 'Volume', value: volumeValue || '-'};
+    if (unitType === 'quantity') return {label: 'Quantity', value: quantityValue ?? '-'};
+    return {label: 'Unit', value: volumeValue || quantityValue || '-'};
+  };
+
+  const unitInfo = getProductUnitInfo(product);
 
   if (isLoading) {
     return (
@@ -143,7 +165,7 @@ const ProductDetail = ({route, navigation}) => {
                 {product?.productName}
               </AppText>
               <AppText greyText fontSize={12}>
-                {product.volume}, price
+                {unitInfo.label}: {unitInfo.value}
               </AppText>
               <AppText greyText fontSize={12}>
                 Sales Tax: {product?.salesTax || 0}%
@@ -196,9 +218,9 @@ const ProductDetail = ({route, navigation}) => {
                 </AppText>
               </View>
               <View style={productDetailStyles.rowItem}>
-                <AppText>{product?.quantity !== 0 ? 'Quantity' : 'Volume'}</AppText>
+                <AppText>{unitInfo.label}</AppText>
                 <AppText fontSize={12} fontFamily={FONTS.medium}>
-                  {product?.quantity !== 0 ? product?.quantity : product?.volume}
+                  {unitInfo.value}
                 </AppText>
               </View>
             </View>
@@ -238,7 +260,13 @@ const ProductDetail = ({route, navigation}) => {
             Are you sure you want to delete this product?
           </AppText>
           <View style={productDetailStyles.deleteModalButtons}>
-            <AppButton title={'Delete'} containerStyle={productDetailStyles.deleteModalButton} transparentButton={true} onPress={handleDeleteProduct} />
+            <AppButton
+              title={'Delete'}
+              containerStyle={[productDetailStyles.deleteModalButton, {borderWidth: 1, borderColor: COLORS.red}]}
+              textStyle={{color: COLORS.red}}
+              transparentButton={true}
+              onPress={handleDeleteProduct}
+            />
             <AppButton title={'Cancel'} containerStyle={productDetailStyles.deleteModalButton} onPress={() => setDeleteModelShow(false)} />
           </View>
         </View>

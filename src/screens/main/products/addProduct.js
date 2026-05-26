@@ -53,8 +53,12 @@ const AddProduct = ({navigation, route}) => {
 
   useEffect(() => {
     if (productCategoriesCache.length == 0) getCategories();
+    if (isEditMode && params?.item) {
+      console.log('EDIT_PRODUCT_ROUTE_ITEM:', params.item);
+      prefillProductFields(params.item, 'route-item');
+    }
     if (isEditMode && productId) getProductDetail();
-  }, [isEditMode, productId, productCategoriesCache]);
+  }, [isEditMode, productId, productCategoriesCache, params?.item]);
 
   useEffect(() => {
     setProductCategoriesItems(productCategoriesCache);
@@ -66,22 +70,61 @@ const AddProduct = ({navigation, route}) => {
     setIsLoading(false);
 
     if (response.success) {
-      const product = response.data;
-      setFormData({
-        productImages: product.productImages.map(img => ({uri: img, s3Url: true})),
-        productName: product.productName,
-        price: product?.price?.toString(),
-        salesTax: product?.salesTax?.toString?.() || '',
-        volume: product.volume?.toString(),
-        manufacturedBy: product.manufacturedBy,
-        quantity: product.quantity.toString(),
-        description: product.description,
-      });
-
-      setProductCategoriesValue(product.categoryName?.[0].categoryName);
-      setUnitTypeValue(product.shopType);
-      console.log('PRODUCT: ', product);
+      console.log('EDIT_PRODUCT_DETAIL_RESPONSE:', response);
+      prefillProductFields(response.data, 'api-detail');
+    } else {
+      console.log('EDIT_PRODUCT_DETAIL_ERROR_RESPONSE:', response);
     }
+  };
+
+  const inferUnitTypeValue = product => {
+    const explicitUnit = product?.unitTypeValue || product?.unitType;
+    if (explicitUnit && ['weight', 'volume', 'quantity'].includes(explicitUnit)) {
+      return explicitUnit;
+    }
+
+    const quantity = Number(product?.quantity || 0);
+    const volume = Number(product?.volume || 0);
+
+    if (quantity > 0) return 'quantity';
+    if (volume > 0) return 'volume';
+    return null;
+  };
+
+  const getCategoryValue = product => {
+    if (Array.isArray(product?.categoryName)) return product.categoryName?.[0]?.categoryName || null;
+    if (typeof product?.categoryName === 'string') return product.categoryName;
+    return null;
+  };
+
+  const prefillProductFields = (product, source = 'unknown') => {
+    if (!product) return;
+
+    const mappedUnitType = inferUnitTypeValue(product);
+    const mappedCategory = getCategoryValue(product);
+
+    setFormData({
+      productImages: Array.isArray(product?.productImages) ? product.productImages.map(img => ({uri: img, s3Url: true})) : [],
+      productName: product?.productName || '',
+      price: product?.price?.toString?.() || '',
+      salesTax: product?.salesTax?.toString?.() || '',
+      volume: product?.volume?.toString?.() || '0',
+      manufacturedBy: product?.manufacturedBy || '',
+      quantity: product?.quantity?.toString?.() || '0',
+      description: product?.description || '',
+    });
+
+    setProductCategoriesValue(mappedCategory);
+    setUnitTypeValue(mappedUnitType);
+
+    console.log(`EDIT_PRODUCT_PREFILL_${source.toUpperCase()}:`, {
+      productId: product?._id,
+      category: mappedCategory,
+      unitTypeValue: mappedUnitType,
+      quantity: product?.quantity,
+      volume: product?.volume,
+      rawProduct: product,
+    });
   };
 
   const getCategories = async () => {
@@ -93,6 +136,12 @@ const AddProduct = ({navigation, route}) => {
   };
 
   const handleAddProduct = async () => {
+    if (isEditMode && !productId) {
+      ShowMessage('Product ID missing for update');
+      console.log('UPDATE_PRODUCT_ABORTED_MISSING_PRODUCT_ID:', {params});
+      return;
+    }
+
     const data = {...formData, shopType: 'shop', categoryName: productCategoriesValue, unitTypeValue};
     const isValidate = addProductValidations(data);
     if (!isValidate) return;
@@ -124,7 +173,9 @@ const AddProduct = ({navigation, route}) => {
         categoryName: productCategoriesValue,
         productDetails: {...data, ...formatedData},
       };
+      console.log('UPDATE_PRODUCT_PAYLOAD:', formatedData);
       const response = await commonAPI.updateProductAPI(formatedData);
+      console.log('UPDATE_PRODUCT_RESPONSE:', response);
       setIsLoading(false);
       if (response?.success) {
         ShowMessage('Product updated successfully');

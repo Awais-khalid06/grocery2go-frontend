@@ -99,7 +99,13 @@ const ShopOwnerOrderDetail = () => {
     if (orderType === 'NEW') {
       return (
         <View style={[orderDetailStyles.rowButtonsContainer, {marginVertical: 15}]}>
-          <AppButton title={'Accept'} onPress={() => handleAcceptRejectOrder(order, 'accept', true)} containerStyle={orderDetailStyles.rowButton} transparentButton={true} />
+          <AppButton
+            title={'Accept'}
+            onPress={() => handleAcceptRejectOrder(order, 'accept', true)}
+            containerStyle={[orderDetailStyles.rowButton, {borderWidth: 1, borderColor: COLORS.red}]}
+            textStyle={{color: COLORS.red}}
+            transparentButton={true}
+          />
           <AppButton title={'Reject'} onPress={() => handleAcceptRejectOrder(order, 'reject', true)} containerStyle={orderDetailStyles.rowButton} />
         </View>
       );

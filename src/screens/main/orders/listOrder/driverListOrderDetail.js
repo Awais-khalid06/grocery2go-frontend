@@ -1,7 +1,7 @@
 import {View, Image, Pressable} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {AppButton, AppScrollView, AppText, AppTextInput, Header, Loader, Screen, SuccessModal} from '../../../../components';
-import {FONTS} from '../../../../utils/theme';
+import {COLORS, FONTS} from '../../../../utils/theme';
 import {listStyles, orderDetailStyles} from '../../styles';
 import {UnCheckSquareIcon, CheckSquareIcon, ChatIcon, LocationGrayIcon} from '../../../../assets/icons';
 import globalStyles from '../../../../../globalStyles';
@@ -190,7 +190,13 @@ const DriverListOrderDetail = ({navigation, route}) => {
 
         {!isAccepted && !isBillSend && (
           <View style={[orderDetailStyles.buttonsContainer, {marginTop: 0}, globalStyles.bottomButton]}>
-            <AppButton title={'Accept'} onPress={() => handleAcceptRejectOrder(order, 'accept', true)} containerStyle={orderDetailStyles.button} transparentButton={true} />
+            <AppButton
+              title={'Accept'}
+              onPress={() => handleAcceptRejectOrder(order, 'accept', true)}
+              containerStyle={[orderDetailStyles.button, {borderWidth: 1, borderColor: COLORS.red}]}
+              textStyle={{color: COLORS.red}}
+              transparentButton={true}
+            />
             <AppButton title={'Reject'} onPress={() => handleAcceptRejectOrder(order, 'reject', true)} containerStyle={orderDetailStyles.button} />
           </View>
         )}

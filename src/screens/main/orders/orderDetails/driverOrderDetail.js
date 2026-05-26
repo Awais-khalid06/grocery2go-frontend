@@ -229,7 +229,13 @@ const DriverOrderDetail = () => {
 
         {orderType === 'NEW' && (
           <View style={[orderDetailStyles.buttonsContainer, {marginTop: 0}, globalStyles.bottomButton]}>
-            <AppButton title={'Accept'} onPress={() => handleAcceptRejectOrder(order, 'accept', true)} containerStyle={orderDetailStyles.button} transparentButton={true} />
+            <AppButton
+              title={'Accept'}
+              onPress={() => handleAcceptRejectOrder(order, 'accept', true)}
+              containerStyle={[orderDetailStyles.button, {borderWidth: 1, borderColor: COLORS.red}]}
+              textStyle={{color: COLORS.red}}
+              transparentButton={true}
+            />
             <AppButton title={'Reject'} onPress={() => handleAcceptRejectOrder(order, 'reject', true)} containerStyle={orderDetailStyles.button} />
           </View>
         )}

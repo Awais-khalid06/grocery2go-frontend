@@ -10,6 +10,7 @@ import {getDistanceFromLatLon, getFromNowTime} from '../../helpers';
 
 const OrderActionCard = ({onPress, type, item, loggedInUserLocation, onPressAccept, onPressReject, isPriceShow = true, isAcceptRejectButtonsShow = true}) => {
   const orderNumber = item?.orderNumber;
+  const isShopOwnerNewOrderCard = type === 'SHOP_NEW_ORDER';
 
   let locationAddress = item?.orderSummary?.endLocation?.address;
   let itemsTotalPrice = 0;
@@ -81,7 +82,13 @@ const OrderActionCard = ({onPress, type, item, loggedInUserLocation, onPressAcce
           </View>
 
           <View style={styles.buttonsContainer}>
-            <AppButton title={'Accept'} onPress={() => onPressAccept?.(item)} containerStyle={styles.button} transparentButton={true} />
+            <AppButton
+              title={'Accept'}
+              onPress={() => onPressAccept?.(item)}
+              containerStyle={[styles.button, isShopOwnerNewOrderCard ? styles.acceptButtonShopOwner : null]}
+              textStyle={isShopOwnerNewOrderCard ? styles.acceptButtonTextShopOwner : null}
+              transparentButton={true}
+            />
             <AppButton title={'Reject'} containerStyle={styles.button} onPress={() => onPressReject?.(item)} />
           </View>
         </>
@@ -100,6 +107,8 @@ const styles = StyleSheet.create({
   orderNumberContainer: {flexDirection: 'row', alignItems: 'center'},
   textcontent: {gap: 3},
   button: {width: '45%', height: 40, textAlign: 'center', textAlignVertical: 'center'},
+  acceptButtonShopOwner: {borderWidth: 1, borderColor: COLORS.red},
+  acceptButtonTextShopOwner: {color: COLORS.red},
   buttonsContainer: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 20},
 });
 
