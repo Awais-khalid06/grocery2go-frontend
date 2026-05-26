@@ -5,6 +5,13 @@ import {Alert} from 'react-native';
 const usePaymentSheetHandler = () => {
   const {presentPaymentSheet, initPaymentSheet} = usePaymentSheet();
 
+  const isPaymentSheetCanceled = error => {
+    const code = error?.code || '';
+    const message = error?.message || '';
+
+    return code === 'Canceled' || code === 'CanceledError' || /cancel/i.test(message);
+  };
+
   // Your reusable function
   const initializeAndPresentPaymentSheet = useCallback(
     async (data, onSuccessPayment) => {
@@ -51,8 +58,13 @@ const usePaymentSheetHandler = () => {
 
         if (presentError) {
           console.log('[PaymentSheet] present failed', presentError);
-          Alert.alert(`Error code: ${presentError.code}`, presentError.message);
-          return {success: false, stage: 'present', error: presentError}; // Early return if presentation fails
+          const isCanceled = isPaymentSheetCanceled(presentError);
+
+          if (!isCanceled) {
+            Alert.alert(`Error code: ${presentError.code}`, presentError.message);
+          }
+
+          return {success: false, stage: 'present', error: presentError, isCanceled}; // Early return if presentation fails
         }
 
         console.log('[PaymentSheet] present success, calling onSuccessPayment callback');

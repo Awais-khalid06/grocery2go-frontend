@@ -43,7 +43,7 @@ const MyCart = ({navigation}) => {
       <FlatList
         data={myCartList}
         keyExtractor={(item, index) => index.toString()}
-        renderItem={({item, index}) => <CartItem item={item} onPressCrossIcon={handleRemoveItemFromCart} onPressDecrement={handleDecrementCartItem} onPressIncrement={handleIncrementCartItem} />}
+        renderItem={({item, index}) => <CartItem item={item} isDynamicUnitInfo onPressCrossIcon={handleRemoveItemFromCart} onPressDecrement={handleDecrementCartItem} onPressIncrement={handleIncrementCartItem} />}
         contentContainerStyle={[globalStyles.flexGrow1, globalStyles.screenPadding, globalStyles.inputsGap, globalStyles.screenPaddingBottom10]}
         ListFooterComponent={renderListFooterComponent}
         ListFooterComponentStyle={cartStyles.checkoutCardFooter}

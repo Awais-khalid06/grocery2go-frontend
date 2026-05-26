@@ -9,6 +9,16 @@ import {API_METHODS, callApi} from '../../../network/NetworkManger';
 import {API} from '../../../network/Environment';
 import {onAPIError} from '../../../helpers';
 
+const getOrderTimestamp = order => {
+  const parsedTime = new Date(order?.createdAt || order?.updatedAt || '').getTime();
+  return Number.isFinite(parsedTime) ? parsedTime : 0;
+};
+
+const sortOrdersLatestFirst = list => {
+  const safeList = Array.isArray(list) ? [...list] : [];
+  return safeList.sort((a, b) => getOrderTimestamp(b) - getOrderTimestamp(a));
+};
+
 const OrderTracking = ({navigation}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [orders, setOrders] = useState([]);
@@ -16,7 +26,7 @@ const OrderTracking = ({navigation}) => {
   const getNewOrders = useCallback(() => {
     const onSuccess = response => {
       // console.log('ORDER TRACKINGS:', JSON.stringify(response));
-      setOrders(response.data);
+      setOrders(sortOrdersLatestFirst(response?.data?.reverse() || []));
     };
     callApi(API_METHODS.GET, API.userNewOrders, null, onSuccess, onAPIError, setIsLoading);
   }, []);

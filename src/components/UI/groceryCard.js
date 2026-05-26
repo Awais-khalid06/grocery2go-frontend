@@ -8,6 +8,26 @@ import globalStyles from '../../../globalStyles';
 
 const GroceryCard = ({item, style, onPress, isHeartComponent, onPressPlusIcon, onPressHeartIcon, isLikeLoading, index}) => {
   const imageUri = item?.productImages?.[0];
+  const getUnitInfo = product => {
+    const explicitUnitType = product?.unitTypeValue || product?.unitType;
+    const quantityValue = product?.quantity;
+    const volumeValue = product?.volume;
+    const parsedQuantity = Number(quantityValue || 0);
+
+    let unitType = explicitUnitType ? String(explicitUnitType).toLowerCase() : '';
+    if (!unitType) {
+      if (parsedQuantity > 0) unitType = 'quantity';
+      else if (volumeValue) unitType = 'volume';
+    }
+
+    if (unitType === 'weight') return {label: 'Weight', value: volumeValue || '-'};
+    if (unitType === 'volume') return {label: 'Volume', value: volumeValue || '-'};
+    if (unitType === 'quantity') return {label: 'Quantity', value: quantityValue ?? '-'};
+
+    return {label: 'Unit', value: volumeValue || quantityValue || '-'};
+  };
+
+  const unitInfo = getUnitInfo(item);
 
   return (
     <Pressable style={[styles.container, style]} onPress={() => onPress(item)}>
@@ -19,7 +39,7 @@ const GroceryCard = ({item, style, onPress, isHeartComponent, onPressPlusIcon, o
               {item.productName}
             </AppText>
             <AppText fontSize={10} greyText>
-              {item.volume}, Price
+              {unitInfo.label}: {unitInfo.value}
             </AppText>
           </View>
 

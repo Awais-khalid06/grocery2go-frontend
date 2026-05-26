@@ -2,6 +2,7 @@
 // export const BASE_URL = 'http://ec2-3-87-102-186.compute-1.amazonaws.com/api/v1/';
 // export const SOCKET_BASE_URL = 'http://ec2-3-87-102-186.compute-1.amazonaws.com/';
 
+// LOCAL
 export const BASE_URL = 'http://localhost:3000/api/v1/';
 export const SOCKET_BASE_URL = 'http://localhost:3000/';
 
@@ -42,6 +43,7 @@ export const API = {
   getAllFavShops: 'shop/get-all-favorite-shop',
   shopLikeUnlike: 'shop/mark-favorite-unfavorite', // SHOP ID
   confirmCheckout: 'cart/verify-payment',
+  verifyCheckoutPayment: 'cart/confirm-payment',
   getAllRiders: 'list/get-all-riders',
   getRiderDetail: 'list/get-rider-details', // RIDER ID
   requestRider: 'list/request-rider',

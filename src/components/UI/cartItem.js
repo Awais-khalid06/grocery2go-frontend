@@ -8,7 +8,7 @@ import {listStyles} from '../../screens/main/styles';
 import {useNavigation} from '@react-navigation/native';
 import {ROUTES} from '../../utils/constants';
 
-const CartItem = ({item, onPress, isCrossIcon = true, isCounter = true, isQuatity, type, onPressIncrement, onPressDecrement, onPressCrossIcon, onPressEdit}) => {
+const CartItem = ({item, onPress, isCrossIcon = true, isCounter = true, isQuatity, type, isDynamicUnitInfo = false, onPressIncrement, onPressDecrement, onPressCrossIcon, onPressEdit}) => {
   const navigation = useNavigation();
   const [dotMenuShow, setDotMenuShow] = useState(false);
 
@@ -20,12 +20,12 @@ const CartItem = ({item, onPress, isCrossIcon = true, isCounter = true, isQuatit
   const itemQuantity = item?.itemQuantity ? item?.itemQuantity : item?.quantity;
 
   const getProductUnitInfo = product => {
-    const explicitUnitType = product?.unitTypeValue;
+    const explicitUnitType = product?.unitTypeValue || product?.unitType;
     const quantityValue = product?.quantity;
     const volumeValue = product?.volume;
     const parsedQuantity = Number(quantityValue || 0);
 
-    let unitType = explicitUnitType;
+    let unitType = explicitUnitType ? String(explicitUnitType).toLowerCase() : '';
     if (!unitType) {
       if (parsedQuantity > 0) unitType = 'quantity';
       else if (volumeValue) unitType = 'volume';
@@ -34,11 +34,12 @@ const CartItem = ({item, onPress, isCrossIcon = true, isCounter = true, isQuatit
     if (unitType === 'weight') return {label: 'Weight', value: volumeValue || '-'};
     if (unitType === 'volume') return {label: 'Volume', value: volumeValue || '-'};
     if (unitType === 'quantity') return {label: 'Quantity', value: quantityValue ?? '-'};
-    return {label: 'Volume', value: volumeValue || '-'};
+    return {label: 'Unit', value: volumeValue || quantityValue || '-'};
   };
 
   const unitInfo = getProductUnitInfo(item);
-  const subtitleText = type === 'PRODUCT' ? `${unitInfo.label}: ${unitInfo.value}` : `${item?.volume || '-'}`;
+  const isUnitInfoLabelShow = type === 'PRODUCT' || isDynamicUnitInfo;
+  const subtitleText = isUnitInfoLabelShow ? `${unitInfo.label}: ${unitInfo.value}` : `${item?.volume || '-'}`;
 
   return (
     <Pressable style={styles.container} onPress={() => onPress?.(item)}>

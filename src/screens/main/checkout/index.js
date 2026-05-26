@@ -7,7 +7,7 @@ import globalStyles from '../../../../globalStyles';
 import { cartStyles } from '../styles';
 import { ChevronIcon } from '../../../assets/icons';
 import DatePicker from 'react-native-date-picker';
-import { ROUTES } from '../../../utils/constants';
+import { STACKS, TABS } from '../../../utils/constants';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { customerCartSelector, userSelector } from '../../../redux/selectors';
@@ -64,6 +64,10 @@ const Checkout = ({ navigation, route }) => {
     return totalTax;
   }
 
+  const navigateToMyCart = () => {
+    navigation.navigate(STACKS.Main, { screen: TABS.BuyTab });
+  };
+
   const getDeliveryLocation = () => {
     if (paramsLocation) {
       return {
@@ -81,6 +85,15 @@ const Checkout = ({ navigation, route }) => {
     }
   };
 
+  const verifyCheckoutPayment = verifyPayload => {
+    return new Promise(resolve => {
+      const onVerifySuccess = response => resolve({ ok: true, response });
+      const onVerifyError = error => resolve({ ok: false, error });
+
+      callApi(API_METHODS.POST, API.verifyCheckoutPayment, verifyPayload, onVerifySuccess, onVerifyError);
+    });
+  };
+
   const handlePayNow = () => {
     console.log('[Checkout] Pay Now clicked', {
       cartItemsCount: myCartList?.length || 0,
@@ -93,6 +106,9 @@ const Checkout = ({ navigation, route }) => {
     const onSuccess = async response => {
       console.log('[Checkout] cart/verify-payment success response', response);
       if (response.success) {
+        dispatch(customerCartActions.resetCartItems());
+        console.log('[Checkout] cart reset dispatched right after checkout api success');
+
         const { customer, clientSecret, id, metadata } = response?.order?.paymentIntent || {};
         const sheetData = { customerId: customer, clientSecret: clientSecret, paymentIntentId: id, orderId: metadata?.orderId };
         console.log('[Checkout] sheetData prepared', {
@@ -104,13 +120,35 @@ const Checkout = ({ navigation, route }) => {
 
         const onSuccessPayment = async () => {
           console.log('[Checkout] onSuccessPayment callback fired');
-          dispatch(customerCartActions.resetCartItems());
-          console.log('[Checkout] cart reset dispatched, navigating back');
-          navigation.goBack();
+          const verifyPayload = { paymentIntentId: sheetData.paymentIntentId, orderId: sheetData.orderId };
+          console.log('[Checkout] confirm payment payload', verifyPayload);
+
+          const verifyResult = await verifyCheckoutPayment(verifyPayload);
+          if (verifyResult?.ok && verifyResult?.response?.success) {
+            console.log('[Checkout] payment verification success response', verifyResult.response);
+            return;
+          }
+
+          console.log('[Checkout] payment verification failed response', verifyResult);
+          onAPIError(verifyResult?.error || verifyResult?.response || { message: 'Payment verification failed' });
         };
 
         const paymentSheetResult = await initializeAndPresentPaymentSheet(sheetData, onSuccessPayment);
         console.log('[Checkout] payment sheet flow result', paymentSheetResult);
+
+        if (paymentSheetResult?.success) {
+          console.log('[Checkout] payment success, redirecting to My Cart tab');
+          navigateToMyCart();
+          return;
+        }
+
+        if (paymentSheetResult?.isCanceled) {
+          console.log('[Checkout] payment sheet canceled by user, redirecting to My Cart tab');
+        } else {
+          console.log('[Checkout] payment flow ended with non-success state, redirecting to My Cart tab');
+        }
+
+        navigateToMyCart();
       }
     };
 
