@@ -1,15 +1,14 @@
-import {View, Text} from 'react-native';
+import {View} from 'react-native';
 import React, {useState} from 'react';
 import {AppButton, AppScrollView, AppText, AppTextInput, Header, Loader, Screen, ShowMessage} from '../../../components';
-import {EyeClosedIcon} from '../../../assets/icons';
 import globalStyles from '../../../../globalStyles';
 import {FONTS} from '../../../utils/theme';
 import {changePasswordValidations} from '../../../utils/validations';
 import {API_METHODS, callApi} from '../../../network/NetworkManger';
 import {API} from '../../../network/Environment';
-import {authStateUpdateInRedux, getDeviceIdAndFCM, onAPIError} from '../../../helpers';
+import {getDeviceIdAndFCM, onAPIError} from '../../../helpers';
 import {useDispatch} from 'react-redux';
-import {STACKS} from '../../../utils/constants';
+import commonAPI from '../../../network/commonAPI';
 
 const ChangePassword = ({navigation}) => {
   const dispatch = useDispatch();
@@ -25,12 +24,8 @@ const ChangePassword = ({navigation}) => {
 
     const onSuccess = response => {
       if (response.success) {
-        authStateUpdateInRedux({token: null, refreshToken: null, user: null, dispatch});
-
-        setTimeout(() => {
-          ShowMessage('You need to login again');
-          navigation.replace(STACKS.Auth);
-        }, 200);
+        ShowMessage('Password changed successfully. Please login again.');
+        commonAPI.logout(dispatch, navigation);
       }
     };
 

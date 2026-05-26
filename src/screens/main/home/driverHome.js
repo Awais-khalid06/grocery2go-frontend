@@ -1,11 +1,11 @@
 import {View, Text, Pressable, RefreshControl} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {AppScrollView, AppText, AppTextInput, Loader, OrderActionCard, Screen} from '../../../components';
 import {homeStyles} from '../styles';
 import globalStyles from '../../../../globalStyles';
 import {ArrowDownPrimaryIcon, BellIcon, ChatGrayIcon, ChatIcon, ChatWhiteIcon, ClockPrimaryIcon, SearchIcon, StatPrimaryIcon, TickPrimaryIcon} from '../../../assets/icons';
 import {IconWrapper} from './userHome';
-import {useNavigation} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {COLORS, FONTS} from '../../../utils/theme';
 import {ROUTES, TABS} from '../../../utils/constants';
 import {useDispatch, useSelector} from 'react-redux';
@@ -29,23 +29,25 @@ const DriverHome = () => {
   const pendingOrders = isLoading ? '--' : stats?.inProgressOrders;
   const totalEarnings = isLoading ? '--' : stats?.totalEarnings?.toString();
 
-  useEffect(() => {
-    getOrders();
-    getRiderStats();
-  }, []);
-
-  const getRiderStats = () => {
+  const getRiderStats = useCallback(() => {
     const onSuccess = response => {
       // console.log('STAT:', response);
       setStats(response?.data);
     };
 
     callApi(API_METHODS.GET, API.riderStats, null, onSuccess, onAPIError);
-  };
+  }, []);
 
-  const getOrders = () => {
+  const getOrders = useCallback(() => {
     commonAPI.getDriverNewOrders({dispatch, setIsLoading});
-  };
+  }, [dispatch]);
+
+  useFocusEffect(
+    useCallback(() => {
+      getOrders();
+      getRiderStats();
+    }, [getOrders, getRiderStats]),
+  );
 
   const handlePullToRefresh = () => {
     getOrders();

@@ -202,6 +202,18 @@ export const feedbackStyles = StyleSheet.create({
 });
 
 export const navigateStyles = StyleSheet.create({
+  startNavigationContent: {width: '100%', paddingHorizontal: '7%', gap: 12},
+  startNavigationDescription: {textAlign: 'center'},
+  startNavigationButton: {
+    alignSelf: 'center',
+    width: '68%',
+    height: 40,
+    borderWidth: 1,
+    borderColor: COLORS.primary,
+    borderRadius: 12,
+    backgroundColor: COLORS.white,
+  },
+  startNavigationButtonText: {color: COLORS.primary, fontSize: 13},
   bottonButton: {position: 'absolute', bottom: 40, alignSelf: 'center', width: '90%'},
 });
 export const tipStyles = StyleSheet.create({

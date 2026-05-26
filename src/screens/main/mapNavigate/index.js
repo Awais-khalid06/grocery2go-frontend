@@ -1,7 +1,6 @@
-import {View, Text} from 'react-native';
+import {View} from 'react-native';
 import React, {useState} from 'react';
 import {AppButton, AppText, Header, Loader, Screen} from '../../../components';
-import GoogleMap from '../../../components/googleMap';
 import globalStyles from '../../../../globalStyles';
 import {navigateStyles} from '../styles';
 import {API_METHODS, callApi} from '../../../network/NetworkManger';
@@ -76,9 +75,18 @@ const MapNavigete = ({navigation, route}) => {
       <Header title={'Navigate'} />
       <Loader isLoading={isLoading} />
       <View style={[globalStyles.flex1, {alignItems: 'center', justifyContent: 'center'}]}>
-        {/* <GoogleMap></GoogleMap> */}
-
-        <AppText onPress={handleStartNavigation}>Press Here to Start Navigation</AppText>
+        <View style={navigateStyles.startNavigationContent}>
+          <AppText greyText style={navigateStyles.startNavigationDescription}>
+            Open navigation in your maps app and start the route.
+          </AppText>
+          <AppButton
+            title={'Start Navigation'}
+            onPress={handleStartNavigation}
+            containerStyle={navigateStyles.startNavigationButton}
+            textStyle={navigateStyles.startNavigationButtonText}
+            transparentButton={true}
+          />
+        </View>
         <AppButton title={buttonTitle} containerStyle={navigateStyles.bottonButton} onPress={handlePressBottomButton} />
       </View>
     </Screen>

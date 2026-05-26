@@ -1,5 +1,5 @@
 import {View, Text, FlatList} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {FlatListEmptyComponent, Header, Loader, OrderActionCard, Screen} from '../../../components';
 import globalStyles from '../../../../globalStyles';
 import {ROUTES} from '../../../utils/constants';
@@ -7,17 +7,14 @@ import {API_METHODS, callApi} from '../../../network/NetworkManger';
 import {API} from '../../../network/Environment';
 import {onAPIError} from '../../../helpers';
 import {useDriverOrderActions} from '../../../hooks';
+import {useFocusEffect} from '@react-navigation/native';
 
 const DriverMyOrders = ({navigation}) => {
   const {handlePressNewOrder} = useDriverOrderActions();
   const [orders, setOrders] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    getOrders();
-  }, []);
-
-  const getOrders = () => {
+  const getOrders = useCallback(() => {
     const onSuccess = response => {
       if (response.success) {
         // console.log('Driver My Order: ', JSON.stringify(response));
@@ -26,7 +23,13 @@ const DriverMyOrders = ({navigation}) => {
     };
 
     callApi(API_METHODS.GET, API.getRiderMyOrders, null, onSuccess, onAPIError, setIsLoading);
-  };
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      getOrders();
+    }, [getOrders]),
+  );
 
   return (
     <Screen>

@@ -15,7 +15,7 @@ import commonAPI from '../../../network/commonAPI';
 const Settings = ({navigation}) => {
   const dispatch = useDispatch();
   const user = useSelector(userSelector) || {};
-  const {isGroceryOwner, isDriver} = useAccountType();
+  const {isGroceryOwner} = useAccountType();
   const [isLogoutModalShow, setIsLogoutModalShow] = useState(false);
   const [isProfileImageLoading, setIsProfileImageLoading] = useState(false);
 
@@ -66,7 +66,7 @@ const Settings = ({navigation}) => {
           <LabelWithRightChevron title={'Edit Profile'} onPress={() => navigation.navigate(ROUTES.EditProfile)} />
           {isGroceryOwner && <LabelWithRightChevron title={'My Shop'} onPress={() => navigation.navigate(STACKS.Auth, {screen: ROUTES.CompleteProfile, params: {screenType: 'EDIT_PROFILE'}})} />}
           <LabelWithRightChevron title={'Notification'} onPress={() => navigation.navigate(ROUTES.NotificationSetting)} />
-          {isDriver && <LabelWithRightChevron title={'Bank Detail'} onPress={() => navigation.navigate(ROUTES.BankDetail)} />}
+          {/* {isDriver && <LabelWithRightChevron title={'Bank Detail'} onPress={() => navigation.navigate(ROUTES.BankDetail)} />} */}
           <LabelWithRightChevron title={'Change Password'} onPress={() => navigation.navigate(ROUTES.ChangePassword)} />
           <LabelWithRightChevron title={'Privacy Policy'} onPress={() => navigation.navigate(ROUTES.PrivacyPolicy)} />
           <LabelWithRightChevron title={'Terms of Service'} onPress={() => navigation.navigate(ROUTES.TermsOfService)} />
