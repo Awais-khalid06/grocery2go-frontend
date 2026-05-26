@@ -44,6 +44,7 @@ export const API = {
   shopLikeUnlike: 'shop/mark-favorite-unfavorite', // SHOP ID
   confirmCheckout: 'cart/verify-payment',
   verifyCheckoutPayment: 'cart/confirm-payment',
+  createCheckoutPaymentIntent: 'cart/create-payment-intent',
   getAllRiders: 'list/get-all-riders',
   getRiderDetail: 'list/get-rider-details', // RIDER ID
   requestRider: 'list/request-rider',

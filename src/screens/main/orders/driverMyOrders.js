@@ -9,6 +9,11 @@ import {onAPIError} from '../../../helpers';
 import {useDriverOrderActions} from '../../../hooks';
 import {useFocusEffect} from '@react-navigation/native';
 
+const isCompletedOrder = item => {
+  const status = String(item?.orderStatus || '').trim().toLowerCase();
+  return status === 'completed' || status.includes('completed');
+};
+
 const DriverMyOrders = ({navigation}) => {
   const {handlePressNewOrder} = useDriverOrderActions();
   const [orders, setOrders] = useState([]);
@@ -18,7 +23,9 @@ const DriverMyOrders = ({navigation}) => {
     const onSuccess = response => {
       if (response.success) {
         // console.log('Driver My Order: ', JSON.stringify(response));
-        setOrders(response.data);
+        const safeOrders = Array.isArray(response?.data) ? response.data : [];
+        const activeOrders = safeOrders.filter(item => !isCompletedOrder(item));
+        setOrders(activeOrders);
       }
     };
 

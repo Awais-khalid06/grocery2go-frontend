@@ -1,5 +1,5 @@
 import {View, Image, Pressable, Alert} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {AppButton, AppScrollView, AppText, AppTextInput, Header, Loader, Screen, SuccessModal} from '../../../../components';
 import {FONTS} from '../../../../utils/theme';
 import {listStyles, orderDetailStyles} from '../../styles';
@@ -11,6 +11,7 @@ import {ROUTES} from '../../../../utils/constants';
 import {API_METHODS, callApi} from '../../../../network/NetworkManger';
 import {API} from '../../../../network/Environment';
 import usePaymentSheetHandler from '../../../../hooks/usePaymentSheetHandler';
+import {useFocusEffect} from '@react-navigation/native';
 
 const UserListOrderDetail = ({navigation, route}) => {
   const params = route?.params;
@@ -35,11 +36,10 @@ const UserListOrderDetail = ({navigation, route}) => {
   const paymentStatus = orderSummary?.paymentStatus;
   const deliveryPaymentStatus = orderSummary?.deliveryPaymentStatus;
 
-  useEffect(() => {
-    getOrderDetail();
-  }, [orderId]);
   // console.log('ORDERID', orderId);
-  const getOrderDetail = async () => {
+  const getOrderDetail = useCallback(async () => {
+    if (!orderId) return;
+
     setIsFullScreenLoading(true);
     const response = await commonAPI.getOrderDetail(orderId);
 
@@ -47,9 +47,25 @@ const UserListOrderDetail = ({navigation, route}) => {
 
     setIsFullScreenLoading(false);
     if (response.success) {
+      console.log(
+        '[ListOrderDetail] status debug',
+        {
+          orderId: response?.order?._id,
+          paymentStatus: response?.order?.orderSummary?.paymentStatus,
+          deliveryPaymentStatus: response?.order?.orderSummary?.deliveryPaymentStatus,
+          riderStatus: response?.order?.riderStatus,
+          orderStatus: response?.order?.orderStatus,
+        },
+      );
       setOrder(response?.order);
     }
-  };
+  }, [orderId]);
+
+  useFocusEffect(
+    useCallback(() => {
+      getOrderDetail();
+    }, [getOrderDetail]),
+  );
 
   const handlePayNow = () => {
     const onSuccess = async response => {
@@ -86,7 +102,18 @@ const UserListOrderDetail = ({navigation, route}) => {
     setIsWithContentLoading(false);
 
     if (response.success) {
+      if (response?.data?.noPaymentRequired) {
+        setOrder(prev => ({...prev, orderSummary: {...prev?.orderSummary, deliveryPaymentStatus: 'paid'}}));
+        setPaymentDoneModalShow(true);
+        return;
+      }
+
       const {customer, clientSecret, id, metadata} = response?.data?.order?.paymentIntentData || {};
+      if (!customer || !clientSecret || !id) {
+        onAPIError({message: 'Unable to start delivery payment. Please try again.'});
+        return;
+      }
+
       const sheetData = {customerId: customer, clientSecret: clientSecret, paymentIntentId: id, orderId: metadata?.orderId};
 
       const onSuccessPayment = async () => {
@@ -197,11 +224,11 @@ const UserListOrderDetail = ({navigation, route}) => {
 
         {paymentStatus === 'unpaid' && <AppButton title={'Pay Now'} onPress={handlePayNow} containerStyle={[globalStyles.bottomButton, {marginTop: 50}]} />}
 
-        {paymentStatus == 'paid' && deliveryPaymentStatus === 'unpaid' && (
+        {paymentStatus === 'paid' && deliveryPaymentStatus === 'unpaid' && (
           <View style={[globalStyles.inputsGap, {marginTop: 50}, globalStyles.bottomButton]}>
             <View style={orderDetailStyles.infoRow}>
               <InfoBlueIcon width={15} height={15} />
-              <AppText style={{color: '#0EA0E8'}}>Just pay delivery charges via app when rider arrive</AppText>
+              <AppText style={{color: '#0EA0E8'}}>Pay delivery charges via app</AppText>
             </View>
             {/* <AppButton title={'Track'} onPress={handlePressTrack} /> */}
             <AppButton title={'Pay delivery Charges'} onPress={handlePayDeliveryCharges} />

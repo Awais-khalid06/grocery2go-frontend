@@ -19,6 +19,11 @@ const sortOrdersLatestFirst = list => {
   return safeList.sort((a, b) => getOrderTimestamp(b) - getOrderTimestamp(a));
 };
 
+const isCompletedOrder = item => {
+  const status = String(item?.orderStatus || '').trim().toLowerCase();
+  return status === 'completed' || status.includes('completed');
+};
+
 const OrderTracking = ({navigation}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [orders, setOrders] = useState([]);
@@ -26,7 +31,9 @@ const OrderTracking = ({navigation}) => {
   const getNewOrders = useCallback(() => {
     const onSuccess = response => {
       // console.log('ORDER TRACKINGS:', JSON.stringify(response));
-      setOrders(sortOrdersLatestFirst(response?.data?.reverse() || []));
+      const safeOrders = Array.isArray(response?.data) ? response.data : [];
+      const activeOrders = safeOrders.filter(item => !isCompletedOrder(item));
+      setOrders(sortOrdersLatestFirst(activeOrders));
     };
     callApi(API_METHODS.GET, API.userNewOrders, null, onSuccess, onAPIError, setIsLoading);
   }, []);

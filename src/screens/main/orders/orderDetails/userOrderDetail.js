@@ -1,5 +1,5 @@
 import {View, Image, Pressable} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {AppButton, AppModal, AppScrollView, AppText, AppTextInput, Header, Loader, Screen, SuccessModal} from '../../../../components';
 import {cartStyles, orderDetailStyles} from '../../styles';
 import {ChatIcon, InfoBlueIcon, LocationGrayIcon} from '../../../../assets/icons';
@@ -7,11 +7,13 @@ import {COLORS, FONTS} from '../../../../utils/theme';
 import CartItem from '../../../../components/UI/cartItem';
 import {ROUTES} from '../../../../utils/constants';
 import globalStyles from '../../../../../globalStyles';
-import {useNavigation, useRoute} from '@react-navigation/native';
+import {useFocusEffect, useNavigation, useRoute} from '@react-navigation/native';
 import commonAPI from '../../../../network/commonAPI';
 import dayjs from 'dayjs';
 import {getUserFullName, onAPIError} from '../../../../helpers';
 import usePaymentSheetHandler from '../../../../hooks/usePaymentSheetHandler';
+import {API_METHODS, callApi} from '../../../../network/NetworkManger';
+import {API} from '../../../../network/Environment';
 
 const UserOrderDetail = ({}) => {
   const navigation = useNavigation();
@@ -41,22 +43,37 @@ const UserOrderDetail = ({}) => {
   const orderPaymentStatus = orderSummary?.paymentStatus;
   const deliveryPaymentStatus = orderSummary?.deliveryPaymentStatus;
   // console.log('ORDER:', order);
-  useEffect(() => {
-    getOrderDetail();
-  }, [orderId]);
 
-  const getOrderDetail = async () => {
+  const getOrderDetail = useCallback(async () => {
+    if (!orderId) return;
+
     setIsFullScreenLoading(true);
     const response = await commonAPI.getOrderDetail(orderId);
 
     setIsFullScreenLoading(false);
     if (response.success) {
       const order = response.order;
+      console.log(
+        '[OrderDetail] status debug',
+        {
+          orderId: order?._id,
+          paymentStatus: order?.orderSummary?.paymentStatus,
+          deliveryPaymentStatus: order?.orderSummary?.deliveryPaymentStatus,
+          riderStatus: order?.riderStatus,
+          orderStatus: order?.orderStatus,
+        },
+      );
       setOrderStatus(order.orderStatus);
       setOrder(order);
       // console.log('ORDER: ', JSON.stringify(order));
     }
-  };
+  }, [orderId]);
+
+  useFocusEffect(
+    useCallback(() => {
+      getOrderDetail();
+    }, [getOrderDetail]),
+  );
 
   const handlePressChatIcon = shop => {
     const shopOwnerId = shop?.ownerId;
@@ -83,7 +100,18 @@ const UserOrderDetail = ({}) => {
     // console.log('RES: ', JSON.stringify(response));
 
     if (response.success) {
+      if (response?.data?.noPaymentRequired) {
+        setOrderCompleteModalShow(true);
+        setOrder(prev => ({...prev, orderSummary: {...prev?.orderSummary, deliveryPaymentStatus: 'paid'}}));
+        return;
+      }
+
       const {customer, clientSecret, id, metadata} = response?.data?.order?.paymentIntentData || {};
+      if (!customer || !clientSecret || !id) {
+        onAPIError({message: 'Unable to start delivery payment. Please try again.'});
+        return;
+      }
+
       const sheetData = {customerId: customer, clientSecret: clientSecret, paymentIntentId: id, orderId: metadata?.orderId};
 
       const onSuccessPayment = async () => {
@@ -100,6 +128,66 @@ const UserOrderDetail = ({}) => {
 
       initializeAndPresentPaymentSheet(sheetData, onSuccessPayment);
     }
+  };
+
+  const verifyCheckoutPayment = verifyPayload => {
+    return new Promise(resolve => {
+      const onVerifySuccess = response => resolve({ok: true, response});
+      const onVerifyError = error => resolve({ok: false, error});
+      callApi(API_METHODS.POST, API.verifyCheckoutPayment, verifyPayload, onVerifySuccess, onVerifyError);
+    });
+  };
+
+  const syncDeliveryPaymentStatusSilently = async () => {
+    const response = await commonAPI.riderPayDeliveryCharges(orderId);
+
+    if (response?.success && response?.data?.noPaymentRequired) {
+      setOrder(prev => ({...prev, orderSummary: {...prev?.orderSummary, deliveryPaymentStatus: 'paid'}}));
+    }
+  };
+
+  const handlePayNow = () => {
+    const onSuccess = async response => {
+      if (!response?.success) return;
+
+      if (response?.data?.noPaymentRequired) {
+        setOrder(prev => ({...prev, orderSummary: {...prev?.orderSummary, paymentStatus: 'paid'}}));
+        await syncDeliveryPaymentStatusSilently();
+        return;
+      }
+
+      const {paymentIntent, orderId: createdOrderId} = response?.data || {};
+      const sheetData = {
+        customerId: paymentIntent?.customer,
+        clientSecret: paymentIntent?.clientSecret,
+        paymentIntentId: paymentIntent?.id,
+        orderId: paymentIntent?.metadata?.orderId || createdOrderId || orderId,
+      };
+
+      if (!sheetData?.customerId || !sheetData?.clientSecret || !sheetData?.paymentIntentId) {
+        onAPIError({message: 'Unable to start order payment. Please try again.'});
+        return;
+      }
+
+      const onSuccessPayment = async () => {
+        const verifyResult = await verifyCheckoutPayment({
+          paymentIntentId: sheetData.paymentIntentId,
+          orderId: sheetData.orderId,
+        });
+
+        if (verifyResult?.ok && verifyResult?.response?.success) {
+          setOrder(prev => ({...prev, orderSummary: {...prev?.orderSummary, paymentStatus: 'paid'}}));
+          await syncDeliveryPaymentStatusSilently();
+          return;
+        }
+
+        onAPIError(verifyResult?.error || verifyResult?.response || {message: 'Payment verification failed'});
+      };
+
+      await initializeAndPresentPaymentSheet(sheetData, onSuccessPayment);
+    };
+
+    callApi(API_METHODS.POST, API.createCheckoutPaymentIntent, {orderId}, onSuccess, onAPIError, setIsLoading);
   };
 
   const ORDER_SUMMARY = [
@@ -239,25 +327,24 @@ const UserOrderDetail = ({}) => {
 
         {orderPaymentStatus === 'unpaid' && (
           <View style={orderDetailStyles.footerButtonContainer}>
-            {/* <AppButton disabled={false} title={'Track'} onPress={() => navigation.navigate(ROUTES.OrderTrack)} /> */}
-            {/* <AppButton disabled={false} title={'Pay Now'} onPress={() => navigation.navigate(ROUTES.AddTip)} /> */}
+            <AppButton title={'Pay Now'} onPress={handlePayNow} />
           </View>
         )}
 
-        {riderDetail && deliveryPaymentStatus === 'unpaid' && orderPaymentStatus === 'paid' && (
+        {/* {riderDetail && orderPaymentStatus === 'paid' && deliveryPaymentStatus === 'unpaid' && (
           <View style={[orderDetailStyles.footerButtonContainer, {gap: 5}]}>
             <View style={[orderDetailStyles.rowElement, {marginTop: 5}]}>
               <InfoBlueIcon />
               <AppText fontSize={12} style={orderDetailStyles.blueText}>
-                Just pay delivery charges via app when rider arrive
+                Pay delivery charges via app
               </AppText>
             </View>
             <AppButton title={'Pay delivery Charges'} onPress={() => setOrderArrivedModalShow(true)} />
           </View>
-        )}
+        )} */}
       </AppScrollView>
 
-      <AppModal isVisible={orderArrivedModalShow} setIsVisible={setOrderArrivedModalShow}>
+      {/* <AppModal isVisible={orderArrivedModalShow} setIsVisible={setOrderArrivedModalShow}>
         <View style={globalStyles.modalContainer}>
           <AppText fontFamily={FONTS.semiBold} fontSize={18}>
             Rider Arrived
@@ -267,7 +354,7 @@ const UserOrderDetail = ({}) => {
           </AppText>
           <AppButton title={'Pay Delivery Charges'} onPress={handlePayDeliveryCharges} />
         </View>
-      </AppModal>
+      </AppModal> */}
 
       <SuccessModal
         heading={'Order Completed'}

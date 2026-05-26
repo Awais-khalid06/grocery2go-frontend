@@ -14,6 +14,11 @@ import {useSelector} from 'react-redux';
 import {userSelector} from '../../../redux/selectors';
 import {useFocusEffect} from '@react-navigation/native';
 
+const isCompletedOrder = item => {
+  const status = String(item?.orderStatus || '').trim().toLowerCase();
+  return status === 'completed' || status.includes('completed');
+};
+
 const ShopMyOrders = ({navigation}) => {
   const [orders, setOrders] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -22,7 +27,9 @@ const ShopMyOrders = ({navigation}) => {
   const getOrders = useCallback(() => {
     const onSuccess = response => {
       // console.log('RES::', JSON.stringify(response));
-      setOrders(response.data);
+      const safeOrders = Array.isArray(response?.data) ? response.data : [];
+      const activeOrders = safeOrders.filter(item => !isCompletedOrder(item));
+      setOrders(activeOrders);
     };
 
     callApi(API_METHODS.GET, `${API.getShopAcceptedOrders}`, null, onSuccess, onAPIError, setIsLoading);
