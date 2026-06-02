@@ -1,6 +1,6 @@
 import {View, Image, Pressable, KeyboardAvoidingView, FlatList} from 'react-native';
 import React, {useCallback, useEffect, useState} from 'react';
-import {AppText, AppTextInput, FlatListEmptyComponent, Header, Loader, Screen, SeperatorLine} from '../../../components';
+import {AppText, AppTextInput, FlatListEmptyComponent, Header, Loader, Screen} from '../../../components';
 import {chatRoomStyles, chatStyles} from '../styles';
 import {ArrowIcon, SendGreenIcon} from '../../../assets/icons';
 import {COLORS} from '../../../utils/theme';
@@ -10,7 +10,7 @@ import {userSelector} from '../../../redux/selectors';
 import useSocket from '../../../hooks/useSocket';
 import {getUserFullName, isIOS} from '../../../helpers';
 import Message from './message';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 
 const ChatRoom = ({navigation, route}) => {
   const params = route?.params;
@@ -21,6 +21,7 @@ const ChatRoom = ({navigation, route}) => {
   const [message, setMessage] = useState({type: '', msg: ''});
 
   const socket = useSocket();
+  const insets = useSafeAreaInsets();
 
   const sendMessageEvent = 'send-message';
   const roomJoinEvent = 'join-room';
@@ -108,7 +109,7 @@ const ChatRoom = ({navigation, route}) => {
       <Header LeftIcon={renderUserPicAndName} onPressLeftIcon={() => {}} />
       <Loader isLoading={isLoading} />
 
-      <KeyboardAvoidingView behavior={isIOS ? 'padding' : ''} style={chatRoomStyles.wrapper}>
+      <KeyboardAvoidingView behavior={isIOS ? 'padding' : 'height'} style={chatRoomStyles.wrapper}>
         <FlatList
           data={messages}
           inverted={messages?.length > 0}
@@ -116,12 +117,15 @@ const ChatRoom = ({navigation, route}) => {
           ItemSeparatorComponent={() => <View style={chatRoomStyles.seperator} />}
           style={chatRoomStyles.flatList}
           contentContainerStyle={chatRoomStyles.flatListContentContainer}
+          ListHeaderComponent={<View style={{height: insets.bottom + 20}} />}
           ListEmptyComponent={() => <FlatListEmptyComponent label={isLoading ? '' : 'Write your first message'} />}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="interactive"
           renderItem={({item, index}) => <Message item={item} isIam={getIsIam(item)} isAlertShow={false} />}
           showsVerticalScrollIndicator={false}
         />
 
-        <View style={chatStyles.inputContainer}>
+        <View style={[chatStyles.inputContainer, {paddingBottom: insets.bottom}]}>
           <View style={chatStyles.input}>
             <AppTextInput
               placeholder={'Type a message'}
@@ -134,7 +138,6 @@ const ChatRoom = ({navigation, route}) => {
 
           <SendButton onPress={handleSendMesssage} disabled={!inputValue} />
         </View>
-        <SafeAreaView edges={[]} />
       </KeyboardAvoidingView>
     </Wrapper>
   );
