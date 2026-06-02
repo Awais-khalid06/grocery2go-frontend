@@ -68,6 +68,10 @@ const Checkout = ({ navigation, route }) => {
     navigation.navigate(STACKS.Main, { screen: TABS.BuyTab });
   };
 
+  const navigateToHomeTab = () => {
+    navigation.replace(STACKS.Main, {screen: TABS.HomeTab});
+  };
+
   const getDeliveryLocation = () => {
     if (paramsLocation) {
       return {
@@ -118,6 +122,8 @@ const Checkout = ({ navigation, route }) => {
           hasOrderId: !!sheetData.orderId,
         });
 
+        let isPaymentVerified = false;
+
         const onSuccessPayment = async () => {
           console.log('[Checkout] onSuccessPayment callback fired');
           const verifyPayload = { paymentIntentId: sheetData.paymentIntentId, orderId: sheetData.orderId };
@@ -125,6 +131,7 @@ const Checkout = ({ navigation, route }) => {
 
           const verifyResult = await verifyCheckoutPayment(verifyPayload);
           if (verifyResult?.ok && verifyResult?.response?.success) {
+            isPaymentVerified = true;
             console.log('[Checkout] payment verification success response', verifyResult.response);
             return;
           }
@@ -136,9 +143,16 @@ const Checkout = ({ navigation, route }) => {
         const paymentSheetResult = await initializeAndPresentPaymentSheet(sheetData, onSuccessPayment);
         console.log('[Checkout] payment sheet flow result', paymentSheetResult);
 
+        if (paymentSheetResult?.success && isPaymentVerified) {
+          console.log('[Checkout] payment success, redirecting to Home tab');
+          navigateToHomeTab();
+          return;
+        }
+
         if (paymentSheetResult?.success) {
-          console.log('[Checkout] payment success, redirecting to My Cart tab');
-          navigateToMyCart();
+          console.log('[Checkout] payment succeeded but verification did not complete, redirecting to My Cart tab');
+          // navigateToMyCart();
+          navigateToHomeTab();
           return;
         }
 
@@ -148,7 +162,8 @@ const Checkout = ({ navigation, route }) => {
           console.log('[Checkout] payment flow ended with non-success state, redirecting to My Cart tab');
         }
 
-        navigateToMyCart();
+        // navigateToMyCart();
+        navigateToHomeTab();
       }
     };
 
