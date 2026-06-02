@@ -194,7 +194,7 @@ const UserOrderDetail = ({}) => {
     {title: 'Items Total', amount: `$${Number(orderSummary?.itemsTotal)?.toFixed(2)}`},
     {title: 'Delivery fee', amount: `$${5}`},
     {title: 'Service fee', amount: `$${4}`},
-    {title: 'Admin Fee', amount: `$${3}`},
+    // {title: 'Admin Fee', amount: `$${3}`},
     {title: 'Sales Tax', amount: orderSummary?.salesTax?.toFixed?.(2) || 0.5},
     {title: 'Total Payment', amount: `$${Number(orderSummary?.totalPayment)?.toFixed?.(2)}`, status: orderSummary?.paymentStatus},
     // {title: 'Delivery Fee', amount: '$199.98', status: 'Unpaid'},

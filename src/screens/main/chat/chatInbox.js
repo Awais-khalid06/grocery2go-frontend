@@ -43,8 +43,8 @@ const ChatInbox = ({navigation}) => {
   }, [isScreenFocused]);
 
   const handlePressHead = head => {
-    const inboxId = head?.users.find(u => u?._id !== user?._id);
-    navigation.navigate(ROUTES.ChatRoom, {inboxId});
+    const inboxUser = head?.users.find(u => u?._id !== user?._id);
+    navigation.navigate(ROUTES.ChatRoom, {inboxId: inboxUser?._id});
   };
 
   return (

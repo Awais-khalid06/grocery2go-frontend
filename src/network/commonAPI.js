@@ -322,6 +322,20 @@ const getOrderDetail = async orderId => {
   return apiResponse;
 };
 
+const getUserCompletedOrders = async () => {
+  let apiResponse = {};
+
+  const onSuccess = response => {
+    apiResponse = response;
+  };
+
+  const onError = error => (apiResponse = error);
+
+  await callApi(API_METHODS.GET, `${API.userCompletedOrders}`, null, onSuccess, onError);
+
+  return apiResponse;
+};
+
 const getShopNewOrders = async ({dispatch, setIsLoading}) => {
   const onSuccess = response => {
     if (response.success) dispatch(shopOwnerOrderActions.setNewOrders(response.data));
@@ -435,6 +449,7 @@ export default {
   getRiderDetail,
   requestRider,
   getOrderDetail,
+  getUserCompletedOrders,
   getShopNewOrders,
   shopAcceptRejectOrder,
   driverAcceptRejectOrder,

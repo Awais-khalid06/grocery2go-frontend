@@ -103,6 +103,7 @@ const ChatRoom = ({navigation, route}) => {
 
   const Wrapper = isIOS ? SafeAreaView : Screen;
   const inputValue = message?.type == 'text' ? message.msg : '';
+  const bottomSpacerHeight = insets.bottom + 80;
 
   return (
     <Wrapper style={[globalStyles.flex1]}>
@@ -117,7 +118,7 @@ const ChatRoom = ({navigation, route}) => {
           ItemSeparatorComponent={() => <View style={chatRoomStyles.seperator} />}
           style={chatRoomStyles.flatList}
           contentContainerStyle={chatRoomStyles.flatListContentContainer}
-          ListHeaderComponent={<View style={{height: insets.bottom + 20}} />}
+          ListHeaderComponent={<View style={{height: bottomSpacerHeight}} />}
           ListEmptyComponent={() => <FlatListEmptyComponent label={isLoading ? '' : 'Write your first message'} />}
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="interactive"

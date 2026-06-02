@@ -14,11 +14,11 @@ import {useDriverOrderActions} from '../../../hooks';
 import commonAPI from '../../../network/commonAPI';
 import {API_METHODS, callApi} from '../../../network/NetworkManger';
 import {API} from '../../../network/Environment';
-import {onAPIError} from '../../../helpers';
+import {getOrderPlacedDate, onAPIError} from '../../../helpers';
 
 const DriverHome = () => {
   const dispatch = useDispatch();
-  const {handleAcceptRejectOrder, handlePressNewOrder} = useDriverOrderActions();
+  const {handleAcceptRejectOrder, handlePressNewOrder, activeOrderId, activeAction, isActionLoading} = useDriverOrderActions();
   const navigation = useNavigation();
   const [activeTab, setActiveTab] = useState('Offline');
   const orders = useSelector(driverNewOrdersSelector);
@@ -28,6 +28,9 @@ const DriverHome = () => {
   const completedOrders = isLoading ? '--' : stats?.completedOrders;
   const pendingOrders = isLoading ? '--' : stats?.inProgressOrders;
   const totalEarnings = isLoading ? '--' : stats?.totalEarnings?.toString();
+  const latestOrders = [...(orders || [])]
+    .sort((a, b) => new Date(getOrderPlacedDate(b) || 0) - new Date(getOrderPlacedDate(a) || 0))
+    .slice(0, 5);
 
   const getRiderStats = useCallback(() => {
     const onSuccess = response => {
@@ -132,20 +135,19 @@ const DriverHome = () => {
           </View>
 
           <View style={globalStyles.inputsGap}>
-            {orders?.length > 0 &&
-              orders
-                ?.slice(0, 5)
-                .map((item, index) => (
-                  <OrderActionCard
-                    onPress={handlePressNewOrder}
-                    key={index}
-                    item={item}
-                    type={'DRIVER_NEW_ORDER'}
-                    isPriceShow={false}
-                    onPressAccept={item => handleAcceptRejectOrder(item, 'accept')}
-                    onPressReject={item => handleAcceptRejectOrder(item, 'reject')}
-                  />
-                ))}
+            {latestOrders.map((item, index) => (
+              <OrderActionCard
+                onPress={handlePressNewOrder}
+                key={item?._id || index}
+                item={item}
+                type={'DRIVER_NEW_ORDER'}
+                isPriceShow={false}
+                onPressAccept={item => handleAcceptRejectOrder(item, 'accept')}
+                onPressReject={item => handleAcceptRejectOrder(item, 'reject')}
+                isAcceptLoading={isActionLoading && activeOrderId === item?._id && activeAction === 'accept'}
+                isRejectLoading={isActionLoading && activeOrderId === item?._id && activeAction === 'reject'}
+              />
+            ))}
           </View>
 
           {orders?.length === 0 && (

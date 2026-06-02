@@ -53,6 +53,7 @@ export const API = {
   list: 'list',
   buyingListItems: 'list/buying-grocery',
   userNewOrders: 'order/get-user-orders',
+  userCompletedOrders: 'order/get-user-completed-orders',
   getOrderDetail: 'order/order-details', // ORDER ID
 
   shopNewOrders: 'order/get-shop-orders', // SHOP ID

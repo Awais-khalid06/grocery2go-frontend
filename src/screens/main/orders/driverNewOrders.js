@@ -10,7 +10,7 @@ import {useDriverOrderActions} from '../../../hooks';
 
 const DriverNewOrders = ({navigation}) => {
   const dispatch = useDispatch();
-  const {handleAcceptRejectOrder, handlePressNewOrder} = useDriverOrderActions();
+  const {handleAcceptRejectOrder, handlePressNewOrder, activeOrderId, activeAction, isActionLoading} = useDriverOrderActions();
   const orders = useSelector(driverNewOrdersSelector);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -33,6 +33,8 @@ const DriverNewOrders = ({navigation}) => {
             onPressAccept={item => handleAcceptRejectOrder(item, 'accept')}
             onPressReject={item => handleAcceptRejectOrder(item, 'reject')}
             isPriceShow={false}
+            isAcceptLoading={isActionLoading && activeOrderId === item?._id && activeAction === 'accept'}
+            isRejectLoading={isActionLoading && activeOrderId === item?._id && activeAction === 'reject'}
           />
         )}
         contentContainerStyle={[globalStyles.screenPadding, globalStyles.flexGrow1, globalStyles.inputsGap, globalStyles.screenPaddingBottom10]}

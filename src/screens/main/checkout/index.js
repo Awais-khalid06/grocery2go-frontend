@@ -39,9 +39,9 @@ const Checkout = ({ navigation, route }) => {
   const cartTotal = myCart?.totalPrice ?? 0;
   const deliveryFee = 5;
   const serviceFee = 4;
-  const adminFee = 3;
+  // const adminFee = 3;
   const salesTax = calculateTotalTax(myCartList);
-  const totalPayment = deliveryFee + serviceFee + adminFee + cartTotal + salesTax;
+  const totalPayment = deliveryFee + serviceFee + cartTotal + salesTax;
 
   const formattedTotalPayment = Number(totalPayment).toFixed(2);
 
@@ -49,7 +49,7 @@ const Checkout = ({ navigation, route }) => {
     { title: 'Items Total', amount: `$${Number(cartTotal)?.toFixed?.(2)}` },
     { title: 'Delivery fee', amount: `$${deliveryFee}` },
     { title: 'Service fee', amount: `$${serviceFee}` },
-    { title: 'Admin Fee', amount: `$${adminFee}` },
+    // { title: 'Admin Fee', amount: `$${adminFee}` },
     { title: 'Sales Tax', amount: `$${salesTax.toFixed(2)}` },
     { title: 'Total Payment', amount: `$${formattedTotalPayment}` },
   ];

@@ -6,9 +6,20 @@ import {LocationDistanceIcon, WoodBoxIcon} from '../../assets/icons';
 import AppText from '../text';
 import globalStyles from '../../../globalStyles';
 import AppButton from '../button';
-import {getDistanceFromLatLon, getFromNowTime} from '../../helpers';
+import {formatOrderPlacedDate, getDistanceFromLatLon} from '../../helpers';
 
-const OrderActionCard = ({onPress, type, item, loggedInUserLocation, onPressAccept, onPressReject, isPriceShow = true, isAcceptRejectButtonsShow = true}) => {
+const OrderActionCard = ({
+  onPress,
+  type,
+  item,
+  loggedInUserLocation,
+  onPressAccept,
+  onPressReject,
+  isPriceShow = true,
+  isAcceptRejectButtonsShow = true,
+  isAcceptLoading = false,
+  isRejectLoading = false,
+}) => {
   const orderNumber = item?.orderNumber;
 
   let locationAddress = item?.orderSummary?.endLocation?.address;
@@ -16,6 +27,7 @@ const OrderActionCard = ({onPress, type, item, loggedInUserLocation, onPressAcce
   let totalItems = 0;
 
   const orderType = item?.orderType;
+  const isActionLoading = isAcceptLoading || isRejectLoading;
   // console.log('ITEM:', JSON.stringify(item, null, 2));
   if (type === 'SHOP_NEW_ORDER') {
     itemsTotalPrice = item?.shopDetails?.[0]?.shopOrderSummary?.shopItemsTotal;
@@ -32,12 +44,12 @@ const OrderActionCard = ({onPress, type, item, loggedInUserLocation, onPressAcce
     }
   }
 
-  const timestamp = getFromNowTime(item?.createdAt);
+  const timestamp = formatOrderPlacedDate(item);
   const customerLocation = item?.endLocation;
   const distanceInMile = getDistanceFromLatLon(customerLocation?.coordinates[1], customerLocation?.coordinates?.[0], loggedInUserLocation?.coordinates[1], loggedInUserLocation?.coordinates[0]);
 
   return (
-    <Pressable onPress={() => onPress?.(item)} style={styles.container}>
+    <Pressable disabled={isActionLoading} onPress={() => onPress?.(item)} style={styles.container}>
       <View style={styles.headContainer}>
         <IconWrapper Icon={WoodBoxIcon} style={styles.icon} width={50} height={50} />
         <View style={[globalStyles.flex1, styles.textcontent]}>
@@ -45,10 +57,10 @@ const OrderActionCard = ({onPress, type, item, loggedInUserLocation, onPressAcce
             <AppText style={globalStyles.flex1} fontFamily={FONTS.medium}>
               Order {orderNumber}
             </AppText>
-            <AppText fontSize={12} greyText>
-              {timestamp}
-            </AppText>
           </View>
+          <AppText fontSize={12} greyText style={styles.timestampText}>
+            {timestamp}
+          </AppText>
           <AppText greyText fontSize={12}>
             Location: {locationAddress}
           </AppText>
@@ -87,8 +99,10 @@ const OrderActionCard = ({onPress, type, item, loggedInUserLocation, onPressAcce
               containerStyle={[styles.button, styles.acceptButton]}
               textStyle={styles.acceptButtonText}
               transparentButton={true}
+              isLoading={isAcceptLoading}
+              disabled={isActionLoading}
             />
-            <AppButton title={'Reject'} containerStyle={styles.button} onPress={() => onPressReject?.(item)} />
+            <AppButton title={'Reject'} containerStyle={styles.button} onPress={() => onPressReject?.(item)} isLoading={isRejectLoading} disabled={isActionLoading} />
           </View>
         </>
       )}
@@ -104,7 +118,8 @@ const styles = StyleSheet.create({
   itemsContainer: {flexDirection: 'row', justifyContent: 'space-between', marginTop: 10},
   rightContent: {},
   orderNumberContainer: {flexDirection: 'row', alignItems: 'center'},
-  textcontent: {gap: 3},
+  timestampText: {alignSelf: 'flex-start'},
+  textcontent: {gap: 3, alignItems: 'flex-start'},
   button: {width: '45%', height: 40, textAlign: 'center', textAlignVertical: 'center'},
   acceptButton: {borderWidth: 1, borderColor: COLORS.red},
   acceptButtonText: {color: COLORS.red},

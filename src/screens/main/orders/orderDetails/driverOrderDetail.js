@@ -22,7 +22,7 @@ const DriverOrderDetail = () => {
 
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const {handleAcceptRejectOrder} = useDriverOrderActions();
+  const {handleAcceptRejectOrder, activeOrderId, activeAction, isActionLoading} = useDriverOrderActions();
   const user = useSelector(userSelector);
   const [isFullScreenLoading, setIsFullScreenLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -229,14 +229,22 @@ const DriverOrderDetail = () => {
 
         {orderType === 'NEW' && (
           <View style={[orderDetailStyles.buttonsContainer, {marginTop: 0}, globalStyles.bottomButton]}>
+          <AppButton
+            title={'Accept'}
+            onPress={() => handleAcceptRejectOrder(order, 'accept', true)}
+            containerStyle={[orderDetailStyles.button, {borderWidth: 1, borderColor: COLORS.red}]}
+            textStyle={{color: COLORS.red}}
+            transparentButton={true}
+            isLoading={isActionLoading && activeOrderId === order?._id && activeAction === 'accept'}
+            disabled={isActionLoading}
+          />
             <AppButton
-              title={'Accept'}
-              onPress={() => handleAcceptRejectOrder(order, 'accept', true)}
-              containerStyle={[orderDetailStyles.button, {borderWidth: 1, borderColor: COLORS.red}]}
-              textStyle={{color: COLORS.red}}
-              transparentButton={true}
+              title={'Reject'}
+              onPress={() => handleAcceptRejectOrder(order, 'reject', true)}
+              containerStyle={orderDetailStyles.button}
+              isLoading={isActionLoading && activeOrderId === order?._id && activeAction === 'reject'}
+              disabled={isActionLoading}
             />
-            <AppButton title={'Reject'} onPress={() => handleAcceptRejectOrder(order, 'reject', true)} containerStyle={orderDetailStyles.button} />
           </View>
         )}
       </AppScrollView>

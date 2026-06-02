@@ -38,6 +38,7 @@ export const ROUTES = {
   PrivacyPolicy: 'PrivacyPolicy',
   TermsOfService: 'TermsOfService',
   HelpCenter: 'HelpCenter',
+  OrderHistory: 'OrderHistory',
   CompleteProfile: 'CompleteProfile',
   ShopMyOrders: 'ShopMyOrders',
   CompletedOrders: 'CompletedOrders',

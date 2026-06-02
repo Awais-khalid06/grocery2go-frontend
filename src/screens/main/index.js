@@ -30,6 +30,7 @@ import BankDetail from './settings/bankDetail';
 import ChangePassword from './settings/changePassword';
 import DeleteAccount from './settings/deleteAccount';
 import HelpCenter from './settings/helpCenter';
+import OrderHistory from './settings/orderHistory';
 import NotificationSetting from './settings/notificationSetting';
 import PrivacyPolicy from './settings/privacyPolicy';
 import TermsOfService from './settings/termsOfService';
@@ -62,6 +63,7 @@ export {
   CompletedOrders,
   ShopNewOrders,
   HelpCenter,
+  OrderHistory,
   Orders,
   DeleteAccount,
   TermsOfService,

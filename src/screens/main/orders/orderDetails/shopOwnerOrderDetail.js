@@ -9,7 +9,7 @@ import {ROUTES} from '../../../../utils/constants';
 import globalStyles from '../../../../../globalStyles';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import commonAPI from '../../../../network/commonAPI';
-import {getUserFullName, navigateToChatRoom, onAPIError} from '../../../../helpers';
+import {formatOrderPlacedDate, getUserFullName, navigateToChatRoom, onAPIError} from '../../../../helpers';
 import {useShopOrderActions} from '../../../../hooks';
 import {useDispatch, useSelector} from 'react-redux';
 import {shopOrderDetailSelector, userSelector} from '../../../../redux/selectors';
@@ -26,7 +26,7 @@ const ShopOwnerOrderDetail = () => {
   const dispatch = useDispatch();
   const user = useSelector(userSelector) || {};
   const navigation = useNavigation();
-  const {handleAcceptRejectOrder} = useShopOrderActions();
+  const {handleAcceptRejectOrder, activeOrderId, activeAction, isActionLoading} = useShopOrderActions();
   const [isFullScreenLoading, setIsFullScreenLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -105,8 +105,16 @@ const ShopOwnerOrderDetail = () => {
             containerStyle={[orderDetailStyles.rowButton, {borderWidth: 1, borderColor: COLORS.red}]}
             textStyle={{color: COLORS.red}}
             transparentButton={true}
+            isLoading={isActionLoading && activeOrderId === order?._id && activeAction === 'accept'}
+            disabled={isActionLoading}
           />
-          <AppButton title={'Reject'} onPress={() => handleAcceptRejectOrder(order, 'reject', true)} containerStyle={orderDetailStyles.rowButton} />
+          <AppButton
+            title={'Reject'}
+            onPress={() => handleAcceptRejectOrder(order, 'reject', true)}
+            containerStyle={orderDetailStyles.rowButton}
+            isLoading={isActionLoading && activeOrderId === order?._id && activeAction === 'reject'}
+            disabled={isActionLoading}
+          />
         </View>
       );
     }
@@ -148,6 +156,13 @@ const ShopOwnerOrderDetail = () => {
             <AppText>Order Number</AppText>
             <AppText fontSize={12} greyText>
               {orderNumber}
+            </AppText>
+          </View>
+
+          <View style={[orderDetailStyles.rowItem, {marginTop: 10}]}>
+            <AppText>Order Placed</AppText>
+            <AppText fontSize={12} greyText>
+              {formatOrderPlacedDate(order)}
             </AppText>
           </View>
 

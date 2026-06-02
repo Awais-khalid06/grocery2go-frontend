@@ -24,7 +24,7 @@ const DriverMyOrders = ({navigation}) => {
       if (response.success) {
         // console.log('Driver My Order: ', JSON.stringify(response));
         const safeOrders = Array.isArray(response?.data) ? response.data : [];
-        const activeOrders = safeOrders.filter(item => !isCompletedOrder(item));
+        const activeOrders = safeOrders.filter(item => !isCompletedOrder(item)).reverse();
         setOrders(activeOrders);
       }
     };

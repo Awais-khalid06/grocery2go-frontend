@@ -9,7 +9,7 @@ import globalStyles from '../../../../globalStyles';
 import {ROUTES} from '../../../utils/constants';
 import {API_METHODS, callApi} from '../../../network/NetworkManger';
 import {API} from '../../../network/Environment';
-import {getUserFullName, onAPIError} from '../../../helpers';
+import {formatOrderPlacedDate, getUserFullName, onAPIError} from '../../../helpers';
 import {useSelector} from 'react-redux';
 import {userSelector} from '../../../redux/selectors';
 import {useFocusEffect} from '@react-navigation/native';
@@ -28,7 +28,7 @@ const ShopMyOrders = ({navigation}) => {
     const onSuccess = response => {
       // console.log('RES::', JSON.stringify(response));
       const safeOrders = Array.isArray(response?.data) ? response.data : [];
-      const activeOrders = safeOrders.filter(item => !isCompletedOrder(item));
+      const activeOrders = safeOrders.filter(item => !isCompletedOrder(item)).reverse();
       setOrders(activeOrders);
     };
 
@@ -72,6 +72,7 @@ const OrderInProcess = ({item, onPress, onPressChatIcon}) => {
   const customerName = getUserFullName(item?.customer?.firstName, item?.customer?.lastName);
   const orderNumber = item?.orderNumber;
   const orderStatus = item?.orderStatus;
+  const placedOn = formatOrderPlacedDate(item);
   const customerImageUri = item?.customer?.image;
   const products = item?.shopDetails?.[0]?.products || [];
 
@@ -97,6 +98,13 @@ const OrderInProcess = ({item, onPress, onPressChatIcon}) => {
         <AppText>Order Number</AppText>
         <AppText fontSize={12} greyText>
           {orderNumber}
+        </AppText>
+      </View>
+
+      <View style={[orderDetailStyles.rowItem, {marginTop: 10}]}>
+        <AppText>Placed On</AppText>
+        <AppText fontSize={12} greyText>
+          {placedOn}
         </AppText>
       </View>
 

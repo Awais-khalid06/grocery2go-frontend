@@ -14,11 +14,11 @@ import commonAPI from '../../../network/commonAPI';
 import {useShopOrderActions} from '../../../hooks';
 import {API_METHODS, callApi} from '../../../network/NetworkManger';
 import {API} from '../../../network/Environment';
-import {onAPIError} from '../../../helpers';
+import {getOrderPlacedDate, onAPIError} from '../../../helpers';
 
 const ShopOwnerHome = () => {
   const navigation = useNavigation();
-  const {handleAcceptRejectOrder} = useShopOrderActions();
+  const {handleAcceptRejectOrder, activeOrderId, activeAction, isActionLoading} = useShopOrderActions();
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const user = useSelector(userSelector);
@@ -52,6 +52,9 @@ const ShopOwnerHome = () => {
   const handlePressNewOrder = item => {
     navigation.navigate(ROUTES.OrderDetails, {orderId: item?._id, orderType: 'NEW'});
   };
+  const latestOrders = [...(orders || [])]
+    .sort((a, b) => new Date(getOrderPlacedDate(b) || 0) - new Date(getOrderPlacedDate(a) || 0))
+    .slice(0, 3);
 
   const completedOrders = isLoading ? '--' : stats?.completedOrders;
   const pendingOrders = isLoading ? '--' : stats?.pendingOrders;
@@ -122,22 +125,20 @@ const ShopOwnerHome = () => {
           </View>
 
           <View style={globalStyles.inputsGap}>
-            {orders &&
-              orders
-                ?.slice(-3)
-                .reverse()
-                .map((item, index) => (
-                  <OrderActionCard
-                    key={index}
-                    onPressAccept={item => handleAcceptRejectOrder(item, 'accept')}
-                    onPressReject={item => handleAcceptRejectOrder(item, 'reject')}
-                    item={item}
-                    type={'SHOP_NEW_ORDER'}
-                    onPress={handlePressNewOrder}
-                    loggedInUserLocation={user?.location}
-                    myShopId={user?.shopId}
-                  />
-                ))}
+            {latestOrders.map((item, index) => (
+              <OrderActionCard
+                key={item?._id || index}
+                onPressAccept={item => handleAcceptRejectOrder(item, 'accept')}
+                onPressReject={item => handleAcceptRejectOrder(item, 'reject')}
+                item={item}
+                type={'SHOP_NEW_ORDER'}
+                onPress={handlePressNewOrder}
+                loggedInUserLocation={user?.location}
+                myShopId={user?.shopId}
+                isAcceptLoading={isActionLoading && activeOrderId === item?._id && activeAction === 'accept'}
+                isRejectLoading={isActionLoading && activeOrderId === item?._id && activeAction === 'reject'}
+              />
+            ))}
           </View>
 
           {orders?.length === 0 ? (

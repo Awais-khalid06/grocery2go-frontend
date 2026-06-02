@@ -6,8 +6,8 @@ import LinearGradient from 'react-native-linear-gradient';
 
 const AppButton = ({title, containerStyle, style, textStyle, onPress, LeftIcon, RightIcon, disabled, isLoading = false, gradientOtherProps, transparentButton, ...restProps}) => {
   let colors = [COLORS.secondary, COLORS.primary];
-  if (disabled || isLoading) colors = [COLORS.grey5, COLORS.grey5];
-  else if (transparentButton) colors = ['transparent', 'transparent'];
+  if (transparentButton) colors = ['transparent', 'transparent'];
+  else if (disabled && !isLoading) colors = [COLORS.grey5, COLORS.grey5];
 
   return (
     <LinearGradient colors={colors} start={{x: 0, y: 0}} end={{x: 1, y: 0}} style={[styles.primary, containerStyle]} {...gradientOtherProps}>

@@ -64,6 +64,7 @@ const Settings = ({navigation}) => {
 
         <View style={{marginTop: 20}}>
           <LabelWithRightChevron title={'Edit Profile'} onPress={() => navigation.navigate(ROUTES.EditProfile)} />
+          <LabelWithRightChevron title={'Order History'} onPress={() => navigation.navigate(ROUTES.OrderHistory)} />
           {isGroceryOwner && <LabelWithRightChevron title={'My Shop'} onPress={() => navigation.navigate(STACKS.Auth, {screen: ROUTES.CompleteProfile, params: {screenType: 'EDIT_PROFILE'}})} />}
           <LabelWithRightChevron title={'Notification'} onPress={() => navigation.navigate(ROUTES.NotificationSetting)} />
           {/* {isDriver && <LabelWithRightChevron title={'Bank Detail'} onPress={() => navigation.navigate(ROUTES.BankDetail)} />} */}

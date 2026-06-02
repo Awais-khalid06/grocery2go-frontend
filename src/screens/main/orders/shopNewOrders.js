@@ -12,7 +12,7 @@ import {useFocusEffect} from '@react-navigation/native';
 const ShopNewOrders = ({navigation}) => {
   const dispatch = useDispatch();
   const user = useSelector(userSelector);
-  const {handleAcceptRejectOrder} = useShopOrderActions();
+  const {handleAcceptRejectOrder, activeOrderId, activeAction, isActionLoading} = useShopOrderActions();
   const orders = useSelector(shopOwnerNewOrdersSelector);
 
   useFocusEffect(
@@ -43,6 +43,8 @@ const ShopNewOrders = ({navigation}) => {
             onPressAccept={item => handleAcceptRejectOrder(item, 'accept')}
             onPressReject={item => handleAcceptRejectOrder(item, 'reject')}
             myShopId={user?.shopId}
+            isAcceptLoading={isActionLoading && activeOrderId === item?._id && activeAction === 'accept'}
+            isRejectLoading={isActionLoading && activeOrderId === item?._id && activeAction === 'reject'}
           />
         )}
         contentContainerStyle={[globalStyles.screenPadding, globalStyles.flexGrow1, globalStyles.inputsGap, globalStyles.screenPaddingBottom10]}

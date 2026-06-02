@@ -6,7 +6,7 @@ import {listStyles, orderDetailStyles} from '../../styles';
 import {UnCheckSquareIcon, CheckSquareIcon, ChatIcon, LocationGrayIcon} from '../../../../assets/icons';
 import globalStyles from '../../../../../globalStyles';
 import commonAPI from '../../../../network/commonAPI';
-import {getUserFullName, onAPIError} from '../../../../helpers';
+import {formatOrderPlacedDate, getUserFullName, onAPIError} from '../../../../helpers';
 import {useDriverOrderActions} from '../../../../hooks';
 import {ROUTES} from '../../../../utils/constants';
 import {API_METHODS, callApi} from '../../../../network/NetworkManger';
@@ -14,7 +14,7 @@ import {API} from '../../../../network/Environment';
 
 const DriverListOrderDetail = ({navigation, route}) => {
   const params = route?.params;
-  const {handleAcceptRejectOrder} = useDriverOrderActions();
+  const {handleAcceptRejectOrder, activeOrderId, activeAction, isActionLoading} = useDriverOrderActions();
   const [isLoading, setIsLoading] = useState(false);
   const [order, setOrder] = useState({});
   const [selectedProducts, setSelectedProducts] = useState([]);
@@ -120,6 +120,13 @@ const DriverListOrderDetail = ({navigation, route}) => {
               </AppText>
             </View>
 
+            <View style={[orderDetailStyles.rowItem, {marginTop: 10}]}>
+              <AppText>Order Placed</AppText>
+              <AppText fontSize={12} greyText>
+                {formatOrderPlacedDate(order)}
+              </AppText>
+            </View>
+
             <AppText fontFamily={FONTS.medium} style={{marginTop: 12}}>
               Grocery List
             </AppText>
@@ -196,8 +203,16 @@ const DriverListOrderDetail = ({navigation, route}) => {
               containerStyle={[orderDetailStyles.button, {borderWidth: 1, borderColor: COLORS.red}]}
               textStyle={{color: COLORS.red}}
               transparentButton={true}
+              isLoading={isActionLoading && activeOrderId === order?._id && activeAction === 'accept'}
+              disabled={isActionLoading}
             />
-            <AppButton title={'Reject'} onPress={() => handleAcceptRejectOrder(order, 'reject', true)} containerStyle={orderDetailStyles.button} />
+            <AppButton
+              title={'Reject'}
+              onPress={() => handleAcceptRejectOrder(order, 'reject', true)}
+              containerStyle={orderDetailStyles.button}
+              isLoading={isActionLoading && activeOrderId === order?._id && activeAction === 'reject'}
+              disabled={isActionLoading}
+            />
           </View>
         )}
 

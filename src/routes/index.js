@@ -23,6 +23,7 @@ import {
   MyCart,
   Notification,
   NotificationSetting,
+  OrderHistory,
   OrderAccepted,
   OrderDetails,
   OrderTrack,
@@ -81,6 +82,7 @@ const Routes = () => {
         <Stack.Screen name={ROUTES.PrivacyPolicy} component={PrivacyPolicy} />
         <Stack.Screen name={ROUTES.TermsOfService} component={TermsOfService} />
         <Stack.Screen name={ROUTES.HelpCenter} component={HelpCenter} />
+        <Stack.Screen name={ROUTES.OrderHistory} component={OrderHistory} />
         <Stack.Screen name={ROUTES.ShopNewOrders} component={ShopNewOrders} />
         <Stack.Screen name={ROUTES.DriverNewOrders} component={DriverNewOrders} />
         <Stack.Screen name={ROUTES.CompletedOrders} component={CompletedOrders} />

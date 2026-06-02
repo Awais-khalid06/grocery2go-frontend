@@ -10,18 +10,18 @@ export const ACCOUNT_TYPE = {
 export const ONBOARDINGS = [
   {
     icon: ShoppingBagIcon,
-    title: 'Best Rating',
-    description: 'Discover top-rated grocery stores near you and shop confidently with trusted reviews.',
+    title: 'Best Rated Stores',
+    description: 'Discover trusted grocery stores near you and shop confidently every time.',
   },
   {
     icon: BasketCirclesIcon,
-    title: 'Best Rating',
-    description: 'Add your daily essentials to the cart in seconds with a smooth and simple shopping experience.',
+    title: 'Fast Delivery',
+    description: 'Add your daily essentials to the cart in seconds and get them delivered quickly.',
   },
   {
     icon: ShoppingGirlIcon,
-    title: 'Best Rating',
-    description: 'Get your groceries delivered to your doorstep quickly, safely, and right on time.',
+    title: 'Happy Shopping',
+    description: 'Enjoy a smooth grocery experience from browsing to doorstep delivery.',
   },
 ];
 export const ACCOUNT_TYPE_DATA = [

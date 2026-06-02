@@ -370,6 +370,7 @@ export const chatRoomStyles = StyleSheet.create({
   flatListContentContainer: {
     flexGrow: 1,
     paddingTop: 10,
+    paddingBottom: 12,
   },
 
   micIconContainer: {
