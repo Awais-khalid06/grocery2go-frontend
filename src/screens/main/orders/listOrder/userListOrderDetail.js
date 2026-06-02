@@ -12,6 +12,7 @@ import {API_METHODS, callApi} from '../../../../network/NetworkManger';
 import {API} from '../../../../network/Environment';
 import usePaymentSheetHandler from '../../../../hooks/usePaymentSheetHandler';
 import {useFocusEffect} from '@react-navigation/native';
+import {formatOrderPlacedDate} from '../../../../helpers';
 
 const UserListOrderDetail = ({navigation, route}) => {
   const params = route?.params;
@@ -161,6 +162,13 @@ const UserListOrderDetail = ({navigation, route}) => {
               <Pressable onPress={() => navigation.navigate(ROUTES.ChatRoom, {inboxId: rider?._id})}>
                 <ChatIcon width={30} height={30} />
               </Pressable>
+            </View>
+
+            <View style={[orderDetailStyles.rowItem, {marginTop: 15}]}>
+              <AppText>Order Placed</AppText>
+              <AppText fontSize={12} greyText>
+                {formatOrderPlacedDate(order)}
+              </AppText>
             </View>
 
             <View style={[orderDetailStyles.rowItem, {marginTop: 15}]}>

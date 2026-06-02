@@ -9,14 +9,9 @@ import {API_METHODS, callApi} from '../../../network/NetworkManger';
 import {API} from '../../../network/Environment';
 import {onAPIError} from '../../../helpers';
 
-const getOrderTimestamp = order => {
-  const parsedTime = new Date(order?.createdAt || order?.updatedAt || '').getTime();
-  return Number.isFinite(parsedTime) ? parsedTime : 0;
-};
-
-const sortOrdersLatestFirst = list => {
+const reverseOrders = list => {
   const safeList = Array.isArray(list) ? [...list] : [];
-  return safeList.sort((a, b) => getOrderTimestamp(b) - getOrderTimestamp(a));
+  return safeList.reverse();
 };
 
 const isCompletedOrder = item => {
@@ -33,7 +28,7 @@ const OrderTracking = ({navigation}) => {
       // console.log('ORDER TRACKINGS:', JSON.stringify(response));
       const safeOrders = Array.isArray(response?.data) ? response.data : [];
       const activeOrders = safeOrders.filter(item => !isCompletedOrder(item));
-      setOrders(sortOrdersLatestFirst(activeOrders));
+      setOrders(reverseOrders(activeOrders));
     };
     callApi(API_METHODS.GET, API.userNewOrders, null, onSuccess, onAPIError, setIsLoading);
   }, []);

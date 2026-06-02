@@ -179,6 +179,30 @@ export const getFromNowTime = date => {
   return dayjs(date).fromNow();
 };
 
+const getDateFromObjectId = id => {
+  if (!id) return null;
+
+  const idString = String(id);
+  if (!/^[a-f\d]{24}$/i.test(idString)) return null;
+
+  const timestampSeconds = parseInt(idString.slice(0, 8), 16);
+  if (!Number.isFinite(timestampSeconds)) return null;
+
+  return new Date(timestampSeconds * 1000);
+};
+
+export const getOrderPlacedDate = order => {
+  return order?.createdAt || order?.updatedAt || order?.orderSummary?.createdAt || order?.orderSummary?.updatedAt || getDateFromObjectId(order?._id);
+};
+
+export const formatOrderPlacedDate = order => {
+  const date = getOrderPlacedDate(order);
+  if (!date) return '-';
+
+  const parsedDate = dayjs(date);
+  return parsedDate.isValid() ? parsedDate.format('DD MMM, YYYY hh:mm A') : '-';
+};
+
 export const getLocationNameFromLatLng = async (lat, lng) => {
   try {
     const res = await Geocoder.geocodePosition({ lat, lng });

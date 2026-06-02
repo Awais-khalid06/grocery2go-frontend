@@ -10,7 +10,7 @@ import globalStyles from '../../../../../globalStyles';
 import {useFocusEffect, useNavigation, useRoute} from '@react-navigation/native';
 import commonAPI from '../../../../network/commonAPI';
 import dayjs from 'dayjs';
-import {getUserFullName, onAPIError} from '../../../../helpers';
+import {formatOrderPlacedDate, getUserFullName, onAPIError} from '../../../../helpers';
 import usePaymentSheetHandler from '../../../../hooks/usePaymentSheetHandler';
 import {API_METHODS, callApi} from '../../../../network/NetworkManger';
 import {API} from '../../../../network/Environment';
@@ -223,11 +223,11 @@ const UserOrderDetail = ({}) => {
         <View style={globalStyles.inputsGap}>
           {shopDetails.map((shop, index) => (
             <View key={index} style={orderDetailStyles.headContainer}>
-              <View style={orderDetailStyles.headerContainer}>
-                {shop?.image && <Image source={{uri: shop?.image}} style={orderDetailStyles.image} />}
-                <View style={orderDetailStyles.contentText}>
-                  <AppText fontFamily={FONTS.medium}>{shop?.shopTitle}</AppText>
-                  <View style={orderDetailStyles.locationContainer}>
+            <View style={orderDetailStyles.headerContainer}>
+              {shop?.image && <Image source={{uri: shop?.image}} style={orderDetailStyles.image} />}
+              <View style={orderDetailStyles.contentText}>
+                <AppText fontFamily={FONTS.medium}>{shop?.shopTitle}</AppText>
+                <View style={orderDetailStyles.locationContainer}>
                     <LocationGrayIcon width={12} height={12} />
                     <AppText fontSize={12} greyText style={globalStyles.flex1}>
                       {shop?.location?.address}
@@ -240,6 +240,20 @@ const UserOrderDetail = ({}) => {
                 <Pressable onPress={() => handlePressChatIcon(shop)}>
                   <ChatIcon width={30} height={30} />
                 </Pressable>
+              </View>
+
+              <View style={[orderDetailStyles.rowItem, {marginTop: 15}]}>
+                <AppText>Order Placed</AppText>
+                <AppText fontSize={12} greyText>
+                  {formatOrderPlacedDate(order)}
+                </AppText>
+              </View>
+
+              <View style={[orderDetailStyles.rowItem, {marginTop: 15}]}>
+                <AppText>Order Number</AppText>
+                <AppText fontSize={12} greyText>
+                  {order?.orderNumber}
+                </AppText>
               </View>
 
               {isProductListShow && (
@@ -280,13 +294,6 @@ const UserOrderDetail = ({}) => {
           <AppText>Order Status</AppText>
           <AppText fontSize={12} primary>
             {renderOrderStatus()}
-          </AppText>
-        </View>
-
-        <View style={[orderDetailStyles.rowItem, {marginTop: 15}]}>
-          <AppText>Order Number</AppText>
-          <AppText fontSize={12} greyText>
-            {order?.orderNumber}
           </AppText>
         </View>
 

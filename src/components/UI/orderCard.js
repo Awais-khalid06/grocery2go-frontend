@@ -1,4 +1,4 @@
-import {View, Text, Pressable, StyleSheet, Image} from 'react-native';
+import {View, Pressable, StyleSheet, Image} from 'react-native';
 import React from 'react';
 import {COLORS, FONTS} from '../../utils/theme';
 import {AvatarImage, ShopImage} from '../../assets/images';
@@ -7,6 +7,7 @@ import {ChatIcon, LocationGrayIcon, OrderTimeSquareIcon, WoodBoxIcon} from '../.
 import SeperatorLine from '../seperatorLine';
 import globalStyles from '../../../globalStyles';
 import {IconWrapper} from '../../screens/main/home/userHome';
+import {formatOrderPlacedDate} from '../../helpers';
 
 const OrderCard = ({item, onPress, onPressChatIcon}) => {
   const shopDetails = item?.shopDetails;
@@ -24,6 +25,9 @@ const OrderCard = ({item, onPress, onPressChatIcon}) => {
         {/* <IconWrapper Icon={WoodBoxIcon} style={styles.icon} width={30} height={30} /> */}
         <View style={styles.contentText}>
           <AppText fontFamily={FONTS.medium}>{item?.orderNumber}</AppText>
+          <AppText fontSize={12} greyText>
+            {formatOrderPlacedDate(item)}
+          </AppText>
           {item?.orderType === 'simpleOrder' && (
             <AppText fontSize={12} primary>
               ${item?.orderTotal}
@@ -70,6 +74,7 @@ const OrderCard = ({item, onPress, onPressChatIcon}) => {
             {item?.orderStatus}
           </AppText>
         </View>
+
       </View>
     </Pressable>
   );
