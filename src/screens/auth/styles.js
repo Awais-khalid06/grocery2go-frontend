@@ -53,7 +53,8 @@ export const signUpStyles = StyleSheet.create({
 export const accountTypeStyles = StyleSheet.create({
   logo: {alignSelf: 'center'},
   accountsContainer: {marginTop: 20, gap: 20},
-  content: {marginBottom: 40},
+  content: {marginBottom: 0},
+  scrollContent: {justifyContent: 'space-between', paddingBottom: 20},
   subtitle: {marginTop: 8, color: COLORS.textGray},
 });
 

@@ -1,10 +1,11 @@
 import {View} from 'react-native';
 import React, {useState} from 'react';
 import FruitsColorBackgroundWrapper from '../common/fruitsColorBackgroundWrapper';
-import {AppButton, AppScrollView, AppText, IconCard} from '../../../components';
+import {AppButton, AppScrollView, AppText, IconCard, Screen} from '../../../components';
 import {LogoIcon} from '../../../assets/icons';
 import {wp} from '../../../helpers';
 import {accountTypeStyles} from '../styles';
+import globalStyles from '../../../../globalStyles';
 import {ACCOUNT_TYPE, ACCOUNT_TYPE_DATA} from '../../../static';
 import {FONTS} from '../../../utils/theme';
 import {ROUTES} from '../../../utils/constants';
@@ -26,28 +27,33 @@ const AccountType = ({navigation}) => {
 
   return (
     <FruitsColorBackgroundWrapper>
-      <AppScrollView
-        keyboardShouldPersistTaps="handled"
-        keyboardDismissMode="interactive"
-        contentContainerStyle={{paddingBottom: 10}}>
-        <LogoIcon width={wp(45)} style={accountTypeStyles.logo} />
+      <Screen>
+        <AppScrollView
+          style={globalStyles.flex1}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="interactive"
+          contentContainerStyle={accountTypeStyles.scrollContent}>
+          <View>
+            <LogoIcon width={wp(45)} style={accountTypeStyles.logo} />
 
-        <View style={accountTypeStyles.content}>
-          <AppText fontFamily={FONTS.medium} fontSize={18} primary>
-            Choose An Account Type
-          </AppText>
-          <AppText style={accountTypeStyles.subtitle}>
-            Select the role that best matches how you want to use Grocery2Go.
-          </AppText>
-          <View style={accountTypeStyles.accountsContainer}>
-            {ACCOUNT_TYPE_DATA.map((account, index) => (
-              <IconCard isSelected={selected === account.title} key={index} item={account} onPress={() => setSelected(account.title)} />
-            ))}
+            <View style={accountTypeStyles.content}>
+              <AppText fontFamily={FONTS.medium} fontSize={18} primary>
+                Choose An Account Type
+              </AppText>
+              <AppText style={accountTypeStyles.subtitle}>
+                Select the role that best matches how you want to use Grocery2Go.
+              </AppText>
+              <View style={accountTypeStyles.accountsContainer}>
+                {ACCOUNT_TYPE_DATA.map((account, index) => (
+                  <IconCard isSelected={selected === account.title} key={index} item={account} onPress={() => setSelected(account.title)} />
+                ))}
+              </View>
+            </View>
           </View>
-        </View>
 
-        <AppButton title={'Continue'} disabled={!selected} onPress={handleContinue} />
-      </AppScrollView>
+          <AppButton title={'Continue'} disabled={!selected} onPress={handleContinue} />
+        </AppScrollView>
+      </Screen>
     </FruitsColorBackgroundWrapper>
   );
 };
