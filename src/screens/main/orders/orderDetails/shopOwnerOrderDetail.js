@@ -1,21 +1,39 @@
-import {View, Image, Pressable} from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {AppButton, AppModal, AppScrollView, AppText, AppTextInput, Header, Loader, Screen, SuccessModal} from '../../../../components';
-import {cartStyles, listStyles, orderDetailStyles} from '../../styles';
-import {ChatIcon, CheckCircleIcon, ChevronIcon, LocationGrayIcon, UnCheckCircleIcon} from '../../../../assets/icons';
-import {COLORS, FONTS} from '../../../../utils/theme';
-import CartItem from '../../../../components/UI/cartItem';
-import {ROUTES} from '../../../../utils/constants';
-import globalStyles from '../../../../../globalStyles';
-import {useNavigation, useRoute} from '@react-navigation/native';
-import commonAPI from '../../../../network/commonAPI';
-import {formatOrderPlacedDate, getUserFullName, navigateToChatRoom, onAPIError} from '../../../../helpers';
-import {useShopOrderActions} from '../../../../hooks';
-import {useDispatch, useSelector} from 'react-redux';
-import {shopOrderDetailSelector, userSelector} from '../../../../redux/selectors';
-import {shopOwnerOrderActions} from '../../../../redux/slices/shopOwner/shopOwnerOrders';
-import {API_METHODS, callApi} from '../../../../network/NetworkManger';
-import {API} from '../../../../network/Environment';
+import { View, Image, Pressable } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  AppButton,
+  AppModal,
+  AppScrollView,
+  AppText,
+  Header,
+  Loader,
+  Screen,
+  SuccessModal,
+} from "../../../../components";
+import { cartStyles, orderDetailStyles } from "../../styles";
+import { ChatIcon, LocationGrayIcon } from "../../../../assets/icons";
+import { COLORS, FONTS } from "../../../../utils/theme";
+import CartItem from "../../../../components/UI/cartItem";
+import { ROUTES } from "../../../../utils/constants";
+import globalStyles from "../../../../../globalStyles";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import commonAPI from "../../../../network/commonAPI";
+import {
+  formatOrderPlacedDate,
+  getUserFullName,
+  navigateToChatRoom,
+  onAPIError,
+} from "../../../../helpers";
+import { useShopOrderActions } from "../../../../hooks";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  shopOrderDetailSelector,
+  userSelector,
+} from "../../../../redux/selectors";
+import { shopOwnerOrderActions } from "../../../../redux/slices/shopOwner/shopOwnerOrders";
+import { API_METHODS, callApi } from "../../../../network/NetworkManger";
+import { API } from "../../../../network/Environment";
+import { formatStatusLabel, getStatusBadgeColors } from "./orderStatusUtils";
 
 const ShopOwnerOrderDetail = () => {
   const route = useRoute();
@@ -26,7 +44,12 @@ const ShopOwnerOrderDetail = () => {
   const dispatch = useDispatch();
   const user = useSelector(userSelector) || {};
   const navigation = useNavigation();
-  const {handleAcceptRejectOrder, activeOrderId, activeAction, isActionLoading} = useShopOrderActions();
+  const {
+    handleAcceptRejectOrder,
+    activeOrderId,
+    activeAction,
+    isActionLoading,
+  } = useShopOrderActions();
   const [isFullScreenLoading, setIsFullScreenLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -37,7 +60,9 @@ const ShopOwnerOrderDetail = () => {
   const myShopId = user?.shopId;
   const customerDetail = order?.customer || {};
   const orderNumber = order?.orderNumber;
-  const myShop = order?.shopDetailWithProduct?.find?.(p => p.shopId == myShopId); // Find my shop from shop details
+  const myShop = order?.shopDetailWithProduct?.find?.(
+    (p) => p.shopId == myShopId
+  ); // Find my shop from shop details
   const productDetail = myShop?.products || [];
   const myShopOrderSummaryDetail = myShop?.shopOrderSummary || {};
   const deliveryLocationText = order.orderSummary?.endLocation?.address;
@@ -62,57 +87,107 @@ const ShopOwnerOrderDetail = () => {
   };
 
   const ORDER_SUMMARY = [
-    {title: 'Items', amount: `${myShopOrderSummaryDetail?.shopItems}`},
-    {title: 'Total Payment', amount: `$${Number(myShopOrderSummaryDetail?.shopItemsTotal)?.toFixed?.(2)}`},
+    { title: "Items", amount: `${myShopOrderSummaryDetail?.shopItems}` },
+    {
+      title: "Total Payment",
+      amount: `$${Number(myShopOrderSummaryDetail?.shopItemsTotal)?.toFixed?.(
+        2
+      )}`,
+    },
   ];
 
   const handleReadyForPickup = () => {
-    const onSuccess = response => {
-      const shopWithProducts = order?.shopDetailWithProduct.map(s => ({...s}));
-      const shopIndex = shopWithProducts.findIndex(s => s.shopId == myShopId);
+    const onSuccess = (response) => {
+      const shopWithProducts = order?.shopDetailWithProduct.map((s) => ({
+        ...s,
+      }));
+      const shopIndex = shopWithProducts.findIndex((s) => s.shopId == myShopId);
 
       if (shopIndex > -1) {
         shopWithProducts[shopIndex].isOrderReadyForPickup = true;
-        dispatch(shopOwnerOrderActions.updateOrderDetail({shopDetailWithProduct: shopWithProducts}));
+        dispatch(
+          shopOwnerOrderActions.updateOrderDetail({
+            shopDetailWithProduct: shopWithProducts,
+          })
+        );
       }
     };
 
-    const data = {orderId, shopId: myShopId};
-    callApi(API_METHODS.POST, API.shopReadyForPickupStatusUpdate, data, onSuccess, onAPIError, setIsLoading);
+    const data = { orderId, shopId: myShopId };
+    callApi(
+      API_METHODS.POST,
+      API.shopReadyForPickupStatusUpdate,
+      data,
+      onSuccess,
+      onAPIError,
+      setIsLoading
+    );
   };
 
   const handlePressChatIcon = () => {
     const customerId = customerDetail?._id;
-    if (customerId) navigation.navigate(ROUTES.ChatRoom, {inboxId: customerId});
+    if (customerId)
+      navigation.navigate(ROUTES.ChatRoom, { inboxId: customerId });
+  };
+
+  const renderStatusBadge = (status) => {
+    const { backgroundColor, textColor } = getStatusBadgeColors(status);
+
+    return (
+      <View style={[orderDetailStyles.statusPill, { backgroundColor }]}>
+        <AppText
+          fontSize={11}
+          style={[orderDetailStyles.statusPillText, { color: textColor }]}
+        >
+          {formatStatusLabel(status)}
+        </AppText>
+      </View>
+    );
   };
 
   if (isFullScreenLoading) {
     return (
       <Screen>
-        <Header title={'Order Details'} />
+        <Header title={"Order Details"} />
         <Loader isLoading={isFullScreenLoading} />
       </Screen>
     );
   }
 
   const renderBottomActionButtons = () => {
-    if (orderType === 'NEW') {
+    if (orderType === "NEW") {
       return (
-        <View style={[orderDetailStyles.rowButtonsContainer, {marginVertical: 15}]}>
+        <View
+          style={[
+            orderDetailStyles.rowButtonsContainer,
+            { marginVertical: 15 },
+          ]}
+        >
           <AppButton
-            title={'Accept'}
-            onPress={() => handleAcceptRejectOrder(order, 'accept', true)}
-            containerStyle={[orderDetailStyles.rowButton, {borderWidth: 1, borderColor: COLORS.red}]}
-            textStyle={{color: COLORS.red}}
+            title={"Accept"}
+            onPress={() => handleAcceptRejectOrder(order, "accept", true)}
+            containerStyle={[
+              orderDetailStyles.rowButton,
+              { borderWidth: 1, borderColor: COLORS.red },
+            ]}
+            textStyle={{ color: COLORS.red }}
             transparentButton={true}
-            isLoading={isActionLoading && activeOrderId === order?._id && activeAction === 'accept'}
+            isLoading={
+              isActionLoading &&
+              activeOrderId === order?._id &&
+              activeAction === "accept"
+            }
             disabled={isActionLoading}
           />
           <AppButton
-            title={'Reject'}
-            onPress={() => handleAcceptRejectOrder(order, 'reject', true)}
+            title={"Reject"}
+            onPress={() => handleAcceptRejectOrder(order, "reject", true)}
             containerStyle={orderDetailStyles.rowButton}
-            isLoading={isActionLoading && activeOrderId === order?._id && activeAction === 'reject'}
+            isLoading={
+              isActionLoading &&
+              activeOrderId === order?._id &&
+              activeAction === "reject"
+            }
             disabled={isActionLoading}
           />
         </View>
@@ -122,27 +197,47 @@ const ShopOwnerOrderDetail = () => {
     if (!isMyOrderReadyForPickup) {
       return (
         <View style={orderDetailStyles.footerButtonContainer}>
-          <AppButton disabled={false} title={'Ready For Pickup'} onPress={handleReadyForPickup} />
+          <AppButton
+            disabled={false}
+            title={"Ready For Pickup"}
+            onPress={handleReadyForPickup}
+          />
         </View>
       );
     }
+
+    return (
+      <View style={orderDetailStyles.footerButtonContainer}>
+        {renderStatusBadge("Ready for Pickup")}
+      </View>
+    );
   };
 
   const driverDetail = order?.rider;
 
   return (
     <Screen>
-      <Header title={'Order Details'} />
+      <Header title={"Order Details"} />
       <Loader isLoading={isLoading} />
       <AppScrollView>
         <View style={orderDetailStyles.headContainer}>
           <View style={orderDetailStyles.headerContainer}>
-            {customerDetail?.image && <Image source={{uri: customerDetail?.image}} style={orderDetailStyles.image} />}
+            {customerDetail?.image && (
+              <Image
+                source={{ uri: customerDetail?.image }}
+                style={orderDetailStyles.image}
+              />
+            )}
             <View style={orderDetailStyles.contentText}>
-              <AppText fontFamily={FONTS.medium}>{getUserFullName(customerDetail.firstName, customerDetail.lastName)}</AppText>
+              <AppText fontFamily={FONTS.medium}>
+                {getUserFullName(
+                  customerDetail.firstName,
+                  customerDetail.lastName
+                )}
+              </AppText>
               <View style={orderDetailStyles.locationContainer}>
                 <LocationGrayIcon width={12} height={12} />
-                <AppText fontSize={12} greyText>
+                <AppText fontSize={12} greyText numberOfLines={2}>
                   {deliveryLocationText}
                 </AppText>
               </View>
@@ -152,27 +247,43 @@ const ShopOwnerOrderDetail = () => {
             </Pressable>
           </View>
 
-          <View style={[orderDetailStyles.rowItem, {marginTop: 15}]}>
+          <View style={[orderDetailStyles.rowItem, { marginTop: 15 }]}>
             <AppText>Order Number</AppText>
-            <AppText fontSize={12} greyText>
+            <AppText
+              fontSize={12}
+              greyText
+              style={orderDetailStyles.rowValue}
+              numberOfLines={1}
+            >
               {orderNumber}
             </AppText>
           </View>
 
-          <View style={[orderDetailStyles.rowItem, {marginTop: 10}]}>
+          <View style={[orderDetailStyles.rowItem, { marginTop: 10 }]}>
             <AppText>Order Placed</AppText>
-            <AppText fontSize={12} greyText>
+            <AppText
+              fontSize={12}
+              greyText
+              style={orderDetailStyles.rowValue}
+              numberOfLines={1}
+            >
               {formatOrderPlacedDate(order)}
             </AppText>
           </View>
 
-          <View style={{gap: 3}}>
-            <AppText fontFamily={FONTS.medium} style={{marginTop: 12}}>
+          <View style={{ gap: 3 }}>
+            <AppText fontFamily={FONTS.medium} style={{ marginTop: 12 }}>
               Products
             </AppText>
-            <View style={{gap: 10}}>
+            <View style={{ gap: 10 }}>
               {productDetail.map((item, index) => (
-                <CartItem item={item} isCounter={false} isQuatity={true} isCrossIcon={false} key={index} />
+                <CartItem
+                  item={item}
+                  isCounter={false}
+                  isQuatity={true}
+                  isCrossIcon={false}
+                  key={index}
+                />
               ))}
             </View>
           </View>
@@ -191,8 +302,16 @@ const ShopOwnerOrderDetail = () => {
                     {item.amount}
                   </AppText>
                   {item.status ? (
-                    <View style={{backgroundColor: item.status === 'Paid' ? COLORS.green : COLORS.danger, paddingVertical: 3, paddingHorizontal: 10, borderRadius: 100}}>
-                      <AppText fontSize={12} style={{color: COLORS.white}}>
+                    <View
+                      style={{
+                        backgroundColor:
+                          item.status === "Paid" ? COLORS.green : COLORS.danger,
+                        paddingVertical: 3,
+                        paddingHorizontal: 10,
+                        borderRadius: 100,
+                      }}
+                    >
+                      <AppText fontSize={12} style={{ color: COLORS.white }}>
                         {item.status}
                       </AppText>
                     </View>
@@ -204,17 +323,30 @@ const ShopOwnerOrderDetail = () => {
         </View>
 
         {driverDetail && (
-          <View style={[{marginTop: 15, gap: 10}]}>
+          <View style={[{ marginTop: 15, gap: 10 }]}>
             <AppText fontFamily={FONTS.semiBold}>Driver</AppText>
-            <View style={[orderDetailStyles.headContainer, {padding: '2%'}]}>
+            <View style={[orderDetailStyles.headContainer, { padding: "2%" }]}>
               <View style={orderDetailStyles.headerContainer}>
-                <Image source={{uri: driverDetail?.image}} style={orderDetailStyles.image} />
+                <Image
+                  source={{ uri: driverDetail?.image }}
+                  style={orderDetailStyles.image}
+                />
                 <View style={orderDetailStyles.contentText}>
                   <AppText fontFamily={FONTS.medium} fontSize={12}>
-                    {getUserFullName(driverDetail?.firstName, driverDetail?.lastName)}
+                    {getUserFullName(
+                      driverDetail?.firstName,
+                      driverDetail?.lastName
+                    )}
                   </AppText>
                 </View>
-                <Pressable onPress={() => navigateToChatRoom({navigation, inboxId: driverDetail?._id})}>
+                <Pressable
+                  onPress={() =>
+                    navigateToChatRoom({
+                      navigation,
+                      inboxId: driverDetail?._id,
+                    })
+                  }
+                >
                   <ChatIcon width={30} height={30} />
                 </Pressable>
               </View>
@@ -222,11 +354,9 @@ const ShopOwnerOrderDetail = () => {
           </View>
         )}
 
-        <View style={[orderDetailStyles.rowItem, {marginTop: 15}]}>
+        <View style={[orderDetailStyles.rowItem, { marginTop: 15 }]}>
           <AppText>Order Status</AppText>
-          <AppText fontSize={12} primary>
-            {order?.orderStatus}
-          </AppText>
+          {renderStatusBadge(order?.orderStatus)}
         </View>
 
         <View style={globalStyles.flex1} />
@@ -234,16 +364,26 @@ const ShopOwnerOrderDetail = () => {
         {renderBottomActionButtons()}
       </AppScrollView>
 
-      <AppModal isVisible={orderArrivedModalShow} setIsVisible={setOrderArrivedModalShow}>
+      <AppModal
+        isVisible={orderArrivedModalShow}
+        setIsVisible={setOrderArrivedModalShow}
+      >
         <View style={globalStyles.modalContainer}>
           <AppText fontFamily={FONTS.semiBold} fontSize={18}>
             Rider Arrived
           </AppText>
-          <AppText greyText style={[orderDetailStyles.textCenter, orderDetailStyles.marginTopBottom]}>
-            Your rider has reached the location. Please complete the delivery payment to finish this order.
+          <AppText
+            greyText
+            style={[
+              orderDetailStyles.textCenter,
+              orderDetailStyles.marginTopBottom,
+            ]}
+          >
+            Your rider has reached the location. Please complete the delivery
+            payment to finish this order.
           </AppText>
           <AppButton
-            title={'Pay Delivery Charges'}
+            title={"Pay Delivery Charges"}
             onPress={() => {
               setOrderArrivedModalShow(false);
               setOrderCompleteModalShow(true);
@@ -253,9 +393,9 @@ const ShopOwnerOrderDetail = () => {
       </AppModal>
 
       <SuccessModal
-        heading={'Order Completed'}
-        description={'Add feedback for rider'}
-        buttonTitle={'Add Feedback'}
+        heading={"Order Completed"}
+        description={"Add feedback for rider"}
+        buttonTitle={"Add Feedback"}
         onPressButton={() => {
           setOrderCompleteModalShow(false);
           navigation.replace(ROUTES.AddFeedback);

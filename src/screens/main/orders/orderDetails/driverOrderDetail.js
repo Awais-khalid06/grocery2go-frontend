@@ -1,17 +1,29 @@
-import {View, Image} from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {AppButton, AppScrollView, AppText, Header, Loader, OrderActionCard, Screen} from '../../../../components';
-import {cartStyles, orderDetailStyles} from '../../styles';
-import {COLORS, FONTS} from '../../../../utils/theme';
-import globalStyles from '../../../../../globalStyles';
-import {useNavigation, useRoute} from '@react-navigation/native';
-import commonAPI from '../../../../network/commonAPI';
-import {useDispatch, useSelector} from 'react-redux';
-import {driverOrderDetailSelector, userSelector} from '../../../../redux/selectors';
-import {useDriverOrderActions} from '../../../../hooks';
-import {getUserFullName} from '../../../../helpers';
-import {ROUTES} from '../../../../utils/constants';
-import {driverOrdersActions} from '../../../../redux/slices/driver/driverOrders';
+import { View, Image } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  AppButton,
+  AppScrollView,
+  AppText,
+  Header,
+  Loader,
+  OrderActionCard,
+  Screen,
+} from "../../../../components";
+import { cartStyles, orderDetailStyles } from "../../styles";
+import { COLORS, FONTS } from "../../../../utils/theme";
+import globalStyles from "../../../../../globalStyles";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import commonAPI from "../../../../network/commonAPI";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  driverOrderDetailSelector,
+  userSelector,
+} from "../../../../redux/selectors";
+import { useDriverOrderActions } from "../../../../hooks";
+import { getUserFullName } from "../../../../helpers";
+import { ROUTES } from "../../../../utils/constants";
+import { driverOrdersActions } from "../../../../redux/slices/driver/driverOrders";
+import { formatStatusLabel, getStatusBadgeColors } from "./orderStatusUtils";
 
 // THIS COMPONENT ONLY HANDLE SIMPLE ORDER
 const DriverOrderDetail = () => {
@@ -22,7 +34,12 @@ const DriverOrderDetail = () => {
 
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const {handleAcceptRejectOrder, activeOrderId, activeAction, isActionLoading} = useDriverOrderActions();
+  const {
+    handleAcceptRejectOrder,
+    activeOrderId,
+    activeAction,
+    isActionLoading,
+  } = useDriverOrderActions();
   const user = useSelector(userSelector);
   const [isFullScreenLoading, setIsFullScreenLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -39,8 +56,11 @@ const DriverOrderDetail = () => {
 
   const totaItems = orderSummary?.totalItems;
   let ORDER_SUMMARY = [
-    {title: 'Items', amount: totaItems},
-    {title: 'Total Payment', amount: `$${Number(orderSummary?.totalPayment)?.toFixed?.(2)}`},
+    { title: "Items", amount: totaItems },
+    {
+      title: "Total Payment",
+      amount: `$${Number(orderSummary?.totalPayment)?.toFixed?.(2)}`,
+    },
   ];
 
   useEffect(() => {
@@ -57,46 +77,72 @@ const DriverOrderDetail = () => {
     }
   };
 
-  const getOneShopOrderStatus = shop => {
+  const getOneShopOrderStatus = (shop) => {
     const shopId = shop?.shopId;
 
-    if (shopIDsThatAcceptOrder?.includes(shopId)) return 'Accepted';
-    else if (shopIDsThatRejectOrder?.includes(shopId)) return 'Rejected';
-    else return 'Pending';
+    if (shopIDsThatAcceptOrder?.includes(shopId)) return "Accepted";
+    else if (shopIDsThatRejectOrder?.includes(shopId)) return "Rejected";
+    else return "Pending";
+  };
+
+  const renderStatusBadge = (status) => {
+    const { backgroundColor, textColor } = getStatusBadgeColors(status);
+
+    return (
+      <View style={[orderDetailStyles.statusPill, { backgroundColor }]}>
+        <AppText
+          fontSize={11}
+          style={[orderDetailStyles.statusPillText, { color: textColor }]}
+        >
+          {formatStatusLabel(status)}
+        </AppText>
+      </View>
+    );
   };
 
   const handlePressNavigate = (shop, type) => {
-    if (type === 'SHOP') {
+    if (type === "SHOP") {
       const shopId = shop?.shopId;
 
-      if (shopId) navigation.navigate(ROUTES.MapNavigete, {orderId, shopId, navigateLocation: shop?.location});
+      if (shopId)
+        navigation.navigate(ROUTES.MapNavigete, {
+          orderId,
+          shopId,
+          navigateLocation: shop?.location,
+        });
 
       return;
     }
 
-    if (type === 'CUSTOMER') {
-      navigation.navigate(ROUTES.MapNavigete, {orderId, customerLocation: orderSummary?.endLocation, navigateLocation: orderSummary?.endLocation});
+    if (type === "CUSTOMER") {
+      navigation.navigate(ROUTES.MapNavigete, {
+        orderId,
+        customerLocation: orderSummary?.endLocation,
+        navigateLocation: orderSummary?.endLocation,
+      });
     }
   };
 
   const handleOrderCompleted = async () => {
     setIsLoading(true);
-    const response = await commonAPI.updateOrderStatus(orderId, 'completed');
+    const response = await commonAPI.updateOrderStatus(orderId, "completed");
     setIsLoading(false);
 
-    console.log('Completed: ', response);
+    console.log("Completed: ", response);
 
     if (response.success) {
       navigation.goBack();
     }
   };
 
-  const isOrderPickedFromAllShops = shops.every(s => s?.isOrderPickedUp == true);
+  const isOrderPickedFromAllShops = shops.every(
+    (s) => s?.isOrderPickedUp == true
+  );
 
   if (isFullScreenLoading) {
     return (
       <Screen>
-        <Header title={'Order Details'} />
+        <Header title={"Order Details"} />
         <Loader isLoading={true} />
       </Screen>
     );
@@ -104,11 +150,16 @@ const DriverOrderDetail = () => {
 
   return (
     <Screen>
-      <Header title={'Order Details'} />
+      <Header title={"Order Details"} />
       <Loader isLoading={isLoading} />
       <AppScrollView>
-        <OrderActionCard type={'DRIVER_NEW_ORDER'} item={order} loggedInUserLocation={user?.location} isAcceptRejectButtonsShow={false} />
-        <View style={[orderDetailStyles.orderSummary, {flex: undefined}]}>
+        <OrderActionCard
+          type={"DRIVER_NEW_ORDER"}
+          item={order}
+          loggedInUserLocation={user?.location}
+          isAcceptRejectButtonsShow={false}
+        />
+        <View style={[orderDetailStyles.orderSummary, { flex: undefined }]}>
           <AppText fontFamily={FONTS.semiBold} fontSize={16}>
             Order Summary
           </AppText>
@@ -120,13 +171,7 @@ const DriverOrderDetail = () => {
                   <AppText fontFamily={FONTS.semiBold} fontSize={12}>
                     {item.amount}
                   </AppText>
-                  {item.status ? (
-                    <View style={{backgroundColor: item.status === 'Paid' ? COLORS.green : COLORS.danger, paddingVertical: 3, paddingHorizontal: 10, borderRadius: 100}}>
-                      <AppText fontSize={12} style={{color: COLORS.white}}>
-                        {item.status}
-                      </AppText>
-                    </View>
-                  ) : null}
+                  {item.status ? renderStatusBadge(item.status) : null}
                 </View>
               </View>
             ))}
@@ -134,33 +179,41 @@ const DriverOrderDetail = () => {
         </View>
 
         {shops?.length > 0 && (
-          <View style={[{marginTop: 15, gap: 10}]}>
+          <View style={[{ marginTop: 15, gap: 10 }]}>
             <AppText fontFamily={FONTS.semiBold}>Shops</AppText>
             {shops.map((shop, index) => (
               <View key={index} style={[orderDetailStyles.headContainer]}>
                 <View style={orderDetailStyles.headerContainer}>
-                  {shop?.image && <Image source={{uri: shop?.image}} style={orderDetailStyles.image} />}
+                  {shop?.image && (
+                    <Image
+                      source={{ uri: shop?.image }}
+                      style={orderDetailStyles.image}
+                    />
+                  )}
                   <View style={orderDetailStyles.contentText}>
                     <AppText fontFamily={FONTS.medium} fontSize={12}>
                       {shop?.shopTitle}
                     </AppText>
-                    <AppText greyText fontSize={12}>
+                    <AppText greyText fontSize={12} numberOfLines={2}>
                       {shop?.location?.address}
                     </AppText>
                   </View>
-                  <AppText fontFamily={FONTS.medium} fontSize={12}>
-                    {getOneShopOrderStatus(shop)}
-                  </AppText>
+                  {renderStatusBadge(getOneShopOrderStatus(shop))}
                 </View>
 
-                {orderType !== 'NEW' && (
+                {orderType !== "NEW" && (
                   <View style={orderDetailStyles.marginTop20}>
                     {shop?.isOrderPickedUp ? (
                       <AppText fontSize={12} primary>
                         Order Picked
                       </AppText>
                     ) : (
-                      <AppButton title={'Navigate'} containerStyle={orderDetailStyles.shopButton} textStyle={{fontSize: 12}} onPress={() => handlePressNavigate(shop, 'SHOP')} />
+                      <AppButton
+                        title={"Navigate"}
+                        containerStyle={orderDetailStyles.shopButton}
+                        textStyle={{ fontSize: 12 }}
+                        onPress={() => handlePressNavigate(shop, "SHOP")}
+                      />
                     )}
                   </View>
                 )}
@@ -169,34 +222,53 @@ const DriverOrderDetail = () => {
           </View>
         )}
 
-        <View style={[{marginTop: 15, gap: 10}]}>
+        <View style={[{ marginTop: 15, gap: 10 }]}>
           <AppText fontFamily={FONTS.semiBold}>Customer</AppText>
 
           <View style={[orderDetailStyles.headContainer]}>
             <View style={orderDetailStyles.headerContainer}>
-              {order?.customer?.image && <Image source={{uri: order?.customer?.image}} style={orderDetailStyles.image} />}
+              {order?.customer?.image && (
+                <Image
+                  source={{ uri: order?.customer?.image }}
+                  style={orderDetailStyles.image}
+                />
+              )}
               <View style={orderDetailStyles.contentText}>
                 <AppText fontFamily={FONTS.medium} fontSize={12}>
-                  {getUserFullName(order?.customer?.firstName, order?.customer?.lastName)}
+                  {getUserFullName(
+                    order?.customer?.firstName,
+                    order?.customer?.lastName
+                  )}
                 </AppText>
-                <AppText greyText fontSize={12}>
+                <AppText greyText fontSize={12} numberOfLines={2}>
                   {customerDeliveryLocation}
                 </AppText>
               </View>
             </View>
-            {orderType !== 'NEW' && isOrderPickedFromAllShops && order?.riderStatus !== 'Arrived' && (
-              <View style={orderDetailStyles.marginTop20}>
-                <AppButton title={'Navigate'} containerStyle={orderDetailStyles.shopButton} textStyle={{fontSize: 12}} onPress={() => handlePressNavigate(null, 'CUSTOMER')} />
-              </View>
-            )}
+            {orderType !== "NEW" &&
+              isOrderPickedFromAllShops &&
+              order?.riderStatus !== "Arrived" && (
+                <View style={orderDetailStyles.marginTop20}>
+                  <AppButton
+                    title={"Navigate"}
+                    containerStyle={orderDetailStyles.shopButton}
+                    textStyle={{ fontSize: 12 }}
+                    onPress={() => handlePressNavigate(null, "CUSTOMER")}
+                  />
+                </View>
+              )}
           </View>
         </View>
 
-        <View style={[orderDetailStyles.rowItem, {marginTop: 15}, globalStyles.flex1]}>
+        <View
+          style={[
+            orderDetailStyles.rowItem,
+            { marginTop: 15 },
+            globalStyles.flex1,
+          ]}
+        >
           <AppText>Order Status</AppText>
-          <AppText fontSize={12} primary>
-            {order?.orderStatus}
-          </AppText>
+          {renderStatusBadge(order?.orderStatus)}
         </View>
 
         {/* <View style={[globalStyles.flex1, {marginTop: 20}]}>
@@ -221,28 +293,55 @@ const DriverOrderDetail = () => {
           </View>
         </View> */}
 
-        {orderSummary?.deliveryPaymentStatus === 'paid' && order?.orderStatus !== 'completed' && (
-          <View style={[orderDetailStyles.buttonsContainer, {marginTop: 15}, globalStyles.bottomButton]}>
-            <AppButton title={'Order Completed'} onPress={handleOrderCompleted} />
-          </View>
-        )}
+        {orderSummary?.deliveryPaymentStatus === "paid" &&
+          order?.orderStatus !== "completed" && (
+            <View
+              style={[
+                orderDetailStyles.buttonsContainer,
+                { marginTop: 15 },
+                globalStyles.bottomButton,
+              ]}
+            >
+              <AppButton
+                title={"Order Completed"}
+                onPress={handleOrderCompleted}
+              />
+            </View>
+          )}
 
-        {orderType === 'NEW' && (
-          <View style={[orderDetailStyles.buttonsContainer, {marginTop: 0}, globalStyles.bottomButton]}>
-          <AppButton
-            title={'Accept'}
-            onPress={() => handleAcceptRejectOrder(order, 'accept', true)}
-            containerStyle={[orderDetailStyles.button, {borderWidth: 1, borderColor: COLORS.red}]}
-            textStyle={{color: COLORS.red}}
-            transparentButton={true}
-            isLoading={isActionLoading && activeOrderId === order?._id && activeAction === 'accept'}
-            disabled={isActionLoading}
-          />
+        {orderType === "NEW" && (
+          <View
+            style={[
+              orderDetailStyles.buttonsContainer,
+              { marginTop: 0 },
+              globalStyles.bottomButton,
+            ]}
+          >
             <AppButton
-              title={'Reject'}
-              onPress={() => handleAcceptRejectOrder(order, 'reject', true)}
+              title={"Accept"}
+              onPress={() => handleAcceptRejectOrder(order, "accept", true)}
+              containerStyle={[
+                orderDetailStyles.button,
+                { borderWidth: 1, borderColor: COLORS.red },
+              ]}
+              textStyle={{ color: COLORS.red }}
+              transparentButton={true}
+              isLoading={
+                isActionLoading &&
+                activeOrderId === order?._id &&
+                activeAction === "accept"
+              }
+              disabled={isActionLoading}
+            />
+            <AppButton
+              title={"Reject"}
+              onPress={() => handleAcceptRejectOrder(order, "reject", true)}
               containerStyle={orderDetailStyles.button}
-              isLoading={isActionLoading && activeOrderId === order?._id && activeAction === 'reject'}
+              isLoading={
+                isActionLoading &&
+                activeOrderId === order?._id &&
+                activeAction === "reject"
+              }
               disabled={isActionLoading}
             />
           </View>
