@@ -1,7 +1,34 @@
 import { COLORS } from "../../../../utils/theme";
 
+const ORDER_STATUS_LABEL_MAP = {
+  "accept by owner": "Accepted by Owner",
+  "accepted by owner": "Accepted by Owner",
+  "accept by rider": "Accepted by Rider",
+  "accepted by rider": "Accepted by Rider",
+  "buying grocery": "Buying Groceries",
+  "buy groceries": "Buying Groceries",
+  "ready for pickup": "Ready for Pickup",
+  "on the way": "On the Way",
+  "order placed": "Order Placed",
+  "order completed": "Order Completed",
+};
+
+const normalizeStatus = (status) =>
+  String(status || "")
+    .trim()
+    .replace(/[_-]+/g, " ")
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .replace(/\s+/g, " ")
+    .toLowerCase();
+
 export const formatStatusLabel = (status) => {
   if (status === null || status === undefined || status === "") return "-";
+
+  const normalized = normalizeStatus(status);
+
+  if (ORDER_STATUS_LABEL_MAP[normalized]) {
+    return ORDER_STATUS_LABEL_MAP[normalized];
+  }
 
   return String(status)
     .trim()
@@ -15,9 +42,7 @@ export const formatStatusLabel = (status) => {
 };
 
 export const getStatusTone = (status) => {
-  const normalized = String(status || "")
-    .trim()
-    .toLowerCase();
+  const normalized = normalizeStatus(status);
 
   if (!normalized) return "neutral";
 
@@ -26,6 +51,7 @@ export const getStatusTone = (status) => {
     normalized.includes("complete") ||
     normalized.includes("delivered") ||
     normalized.includes("accepted") ||
+    normalized.startsWith("accept") ||
     normalized.includes("ready") ||
     normalized.includes("success")
   ) {

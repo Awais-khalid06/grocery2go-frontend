@@ -100,6 +100,10 @@ const DriverOrderDetail = () => {
     );
   };
 
+  const displayOrderStatus = String(
+    order?.orderStatus || order?.status || order?.riderStatus || "Pending"
+  ).trim();
+
   const handlePressNavigate = (shop, type) => {
     if (type === "SHOP") {
       const shopId = shop?.shopId;
@@ -153,12 +157,23 @@ const DriverOrderDetail = () => {
       <Header title={"Order Details"} />
       <Loader isLoading={isLoading} />
       <AppScrollView>
-        <OrderActionCard
-          type={"DRIVER_NEW_ORDER"}
-          item={order}
-          loggedInUserLocation={user?.location}
-          isAcceptRejectButtonsShow={false}
-        />
+        <View
+          style={{
+            backgroundColor: COLORS.white,
+            borderRadius: 12,
+            elevation: 1,
+            shadowColor: COLORS.black,
+            shadowOpacity: 0.1,
+            shadowRadius: 10,
+          }}
+        >
+          <OrderActionCard
+            type={"DRIVER_NEW_ORDER"}
+            item={order}
+            loggedInUserLocation={user?.location}
+            isAcceptRejectButtonsShow={false}
+          />
+        </View>
         <View style={[orderDetailStyles.orderSummary, { flex: undefined }]}>
           <AppText fontFamily={FONTS.semiBold} fontSize={16}>
             Order Summary
@@ -260,16 +275,16 @@ const DriverOrderDetail = () => {
           </View>
         </View>
 
-        <View
-          style={[
-            orderDetailStyles.rowItem,
-            { marginTop: 15 },
-            globalStyles.flex1,
-          ]}
-        >
-          <AppText>Order Status</AppText>
-          {renderStatusBadge(order?.orderStatus)}
-        </View>
+        {displayOrderStatus && (
+          <View
+            style={[orderDetailStyles.orderStatusContainer, { marginTop: 15 }]}
+          >
+            <AppText fontFamily={FONTS.medium}>Order Status</AppText>
+            {renderStatusBadge(displayOrderStatus)}
+          </View>
+        )}
+
+        <View style={globalStyles.flex1} />
 
         {/* <View style={[globalStyles.flex1, {marginTop: 20}]}>
           <View style={orderDetailStyles.distanceItem}>

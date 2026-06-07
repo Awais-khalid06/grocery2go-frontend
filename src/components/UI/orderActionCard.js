@@ -1,12 +1,12 @@
-import {View, StyleSheet, Pressable} from 'react-native';
+import { View, StyleSheet, Pressable } from 'react-native';
 import React from 'react';
-import {COLORS, FONTS} from '../../utils/theme';
-import {IconWrapper} from '../../screens/main/home/userHome';
-import {LocationDistanceIcon, WoodBoxIcon} from '../../assets/icons';
+import { COLORS, FONTS } from '../../utils/theme';
+import { IconWrapper } from '../../screens/main/home/userHome';
+import { LocationDistanceIcon, WoodBoxIcon } from '../../assets/icons';
 import AppText from '../text';
 import globalStyles from '../../../globalStyles';
 import AppButton from '../button';
-import {formatOrderPlacedDate, getDistanceFromLatLon} from '../../helpers';
+import { formatOrderPlacedDate, getDistanceFromLatLon } from '../../helpers';
 
 const OrderActionCard = ({
   onPress,
@@ -62,7 +62,7 @@ const OrderActionCard = ({
             {timestamp}
           </AppText>
           <AppText greyText fontSize={12}>
-            Location: {locationAddress}
+            📍 {locationAddress}
           </AppText>
           <View style={styles.distanceContainer}>
             <LocationDistanceIcon />
@@ -111,19 +111,19 @@ const OrderActionCard = ({
 };
 
 const styles = StyleSheet.create({
-  container: {backgroundColor: COLORS.white, borderRadius: 12, padding: '6%'},
-  icon: {backgroundColor: COLORS.grey400, width: 70, height: 70, justifyContent: 'center', alignItems: 'center', borderRadius: 15},
-  distanceContainer: {flexDirection: 'row', alignItems: 'center', gap: 3},
-  headContainer: {flexDirection: 'row', gap: 15, alignItems: 'center'},
-  itemsContainer: {flexDirection: 'row', justifyContent: 'space-between', marginTop: 10},
+  container: { backgroundColor: COLORS.white, borderRadius: 12, padding: '6%' },
+  icon: { backgroundColor: COLORS.grey400, width: 70, height: 70, justifyContent: 'center', alignItems: 'center', borderRadius: 15 },
+  distanceContainer: { flexDirection: 'row', alignItems: 'center', gap: 3 },
+  headContainer: { flexDirection: 'row', gap: 15, alignItems: 'center' },
+  itemsContainer: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 },
   rightContent: {},
-  orderNumberContainer: {flexDirection: 'row', alignItems: 'center'},
-  timestampText: {alignSelf: 'flex-start'},
-  textcontent: {gap: 3, alignItems: 'flex-start'},
-  button: {width: '45%', height: 40, textAlign: 'center', textAlignVertical: 'center'},
-  acceptButton: {borderWidth: 1, borderColor: COLORS.red},
-  acceptButtonText: {color: COLORS.red},
-  buttonsContainer: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 20},
+  orderNumberContainer: { flexDirection: 'row', alignItems: 'center' },
+  timestampText: { alignSelf: 'flex-start' },
+  textcontent: { gap: 3, alignItems: 'flex-start' },
+  button: { width: '45%', height: 40, textAlign: 'center', textAlignVertical: 'center' },
+  acceptButton: { borderWidth: 1, borderColor: COLORS.red },
+  acceptButtonText: { color: COLORS.red },
+  buttonsContainer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 20 },
 });
 
 export default OrderActionCard;
