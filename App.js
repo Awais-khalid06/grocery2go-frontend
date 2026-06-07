@@ -9,6 +9,7 @@ import { StripeProvider } from '@stripe/stripe-react-native';
 import SocketContext from './src/context/context/socketContext';
 import { SOCKET_BASE_URL, STRIPE_PUBLISHABLE_KEY } from './src/network/Environment';
 import io from 'socket.io-client';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 const persistor = persistStore(store);
 
@@ -20,20 +21,22 @@ const socket = io(SOCKET_BASE_URL);
 
 const App = () => {
   return (
-    <Provider store={store}>
-      <StripeProvider
-        publishableKey={STRIPE_PUBLISHABLE_KEY}
-        urlScheme="https://dashboard.stripe.com/test/dashboard" // required for 3D Secure and bank redirects
-        merchantIdentifier="merchant.com.grocery2go" // required for Apple Pay
-      >
-        <StatusBar translucent backgroundColor={'transparent'} barStyle={'dark-content'} />
-        <PersistGate loading={null} persistor={persistor}>
-          <SocketContext.Provider value={socket}>
-            <Routes />
-          </SocketContext.Provider>
-        </PersistGate>
-      </StripeProvider>
-    </Provider>
+    <SafeAreaProvider>
+      <Provider store={store}>
+        <StripeProvider
+          publishableKey={STRIPE_PUBLISHABLE_KEY}
+          urlScheme="https://dashboard.stripe.com/test/dashboard" // required for 3D Secure and bank redirects
+          merchantIdentifier="merchant.com.grocery2go" // required for Apple Pay
+        >
+          <StatusBar translucent backgroundColor={'transparent'} barStyle={'dark-content'} />
+          <PersistGate loading={null} persistor={persistor}>
+            <SocketContext.Provider value={socket}>
+              <Routes />
+            </SocketContext.Provider>
+          </PersistGate>
+        </StripeProvider>
+      </Provider>
+    </SafeAreaProvider>
   );
 };
 

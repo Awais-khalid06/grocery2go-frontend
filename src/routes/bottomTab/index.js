@@ -1,4 +1,4 @@
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import {
   BoxActiveIcon,
   BoxIcon,
@@ -16,25 +16,28 @@ import {
   ShopIcon,
   TabActiveIcon,
 } from '../../assets/icons';
-import {ClipboardStack, DriverOrdersStack, GroceryOwnerOrdersStack, HomeStack, OrdersStack, ProductsStack, ProfileStack} from '../stacks/main';
-import {TABS} from '../../utils/constants';
-import {View} from 'react-native';
+import { ClipboardStack, DriverOrdersStack, GroceryOwnerOrdersStack, HomeStack, OrdersStack, ProductsStack, ProfileStack } from '../stacks/main';
+import { TABS } from '../../utils/constants';
+import { Platform, View } from 'react-native';
 import globalStyles from '../../../globalStyles';
-import {MyCart} from '../../screens/main';
-import {useAccountType} from '../../hooks';
-import {useEffect} from 'react';
+import { MyCart } from '../../screens/main';
+import { useAccountType } from '../../hooks';
+import { useEffect, useMemo } from 'react';
 import useSocket from '../../hooks/useSocket';
-import {useSelector} from 'react-redux';
-import {customerCartSelector, userSelector} from '../../redux/selectors';
-import {AppText} from '../../components';
-import {FONTS} from '../../utils/theme';
+import { useSelector } from 'react-redux';
+import { customerCartSelector, userSelector } from '../../redux/selectors';
+import { AppText } from '../../components';
+import { FONTS } from '../../utils/theme';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { hp, wp } from '../../helpers';
 
 const Tab = createBottomTabNavigator();
 
 const BottomTab = () => {
   const socket = useSocket();
+  const insets = useSafeAreaInsets();
   const user = useSelector(userSelector) || {};
-  const {isCustomer, isDriver, isGroceryOwner} = useAccountType();
+  const { isCustomer, isDriver, isGroceryOwner } = useAccountType();
   const myCart = useSelector(customerCartSelector);
   const myCartTotalItems = myCart?.cartItems?.length;
 
@@ -44,30 +47,40 @@ const BottomTab = () => {
 
     if (myId) {
       console.log('Socket Emit: User-Enter');
-      socket.emit('user-enter', {userId: myId}, error => console.log(error));
+      socket.emit('user-enter', { userId: myId }, error => console.log(error));
     }
 
     return () => {
       console.log('Clean Up ALL Listner');
 
-      socket.emit('user-leave', {userId: myId}, error => console.log(error));
+      socket.emit('user-leave', { userId: myId }, error => console.log(error));
 
       socket.removeAllListeners();
       socket.disconnect();
     };
   }, []);
 
+  const tabBarDynamicStyle = useMemo(() => {
+    const bottomInset = insets.bottom || 0;
+    const height = hp(10) + (bottomInset > 0 ? bottomInset * 0.35 : 0);
+    return {
+      ...{ height: 65, borderTopWidth: 0, borderTopLeftRadius: 20, borderTopRightRadius: 20 },
+      paddingTop: Platform.OS === 'ios' ? wp(3) : wp(2),
+      height,
+    };
+  }, [insets.bottom]);
+
   return (
     <Tab.Navigator
       screenOptions={{
-        tabBarStyle: {height: 65, borderTopWidth: 0, borderTopLeftRadius: 20, borderTopRightRadius: 20},
+        tabBarStyle: tabBarDynamicStyle,
         tabBarHideOnKeyboard: true,
         headerShown: false,
         tabBarShowLabel: false,
       }}>
       <Tab.Screen
         options={{
-          tabBarIcon: ({focused}) => <TabIcon focused={focused} Icon={focused ? HomeActiveIcon : HomeIcon} />,
+          tabBarIcon: ({ focused }) => <TabIcon focused={focused} Icon={focused ? HomeActiveIcon : HomeIcon} />,
         }}
         name={TABS.HomeTab}
         component={HomeStack}
@@ -76,7 +89,7 @@ const BottomTab = () => {
       {(isGroceryOwner || isDriver) && (
         <Tab.Screen
           options={{
-            tabBarIcon: ({focused}) => <TabIcon focused={focused} Icon={focused ? BoxActiveIcon : BoxIcon} />,
+            tabBarIcon: ({ focused }) => <TabIcon focused={focused} Icon={focused ? BoxActiveIcon : BoxIcon} />,
           }}
           name={TABS.GroceryOwnerOrdersTab}
           component={isDriver ? DriverOrdersStack : GroceryOwnerOrdersStack}
@@ -86,7 +99,7 @@ const BottomTab = () => {
       {isGroceryOwner && (
         <Tab.Screen
           options={{
-            tabBarIcon: ({focused}) => <TabIcon focused={focused} Icon={focused ? ShopActiveIcon : ShopIcon} />,
+            tabBarIcon: ({ focused }) => <TabIcon focused={focused} Icon={focused ? ShopActiveIcon : ShopIcon} />,
           }}
           name={TABS.ProductsTab}
           component={ProductsStack}
@@ -96,7 +109,7 @@ const BottomTab = () => {
       {isCustomer && (
         <Tab.Screen
           options={{
-            tabBarIcon: ({focused}) => <TabIcon focused={focused} Icon={focused ? BuyActiveIcon : BuyIcon} />,
+            tabBarIcon: ({ focused }) => <TabIcon focused={focused} Icon={focused ? BuyActiveIcon : BuyIcon} />,
             tabBarBadge: myCartTotalItems > 0 ? myCartTotalItems : null,
             tabBarBadgeStyle: globalStyles.tabBadgeStyle,
           }}
@@ -108,7 +121,7 @@ const BottomTab = () => {
       {isCustomer && (
         <Tab.Screen
           options={{
-            tabBarIcon: ({focused}) => <TabIcon focused={focused} Icon={focused ? ClipboardActiveIcon : ClipboardIcon} />,
+            tabBarIcon: ({ focused }) => <TabIcon focused={focused} Icon={focused ? ClipboardActiveIcon : ClipboardIcon} />,
           }}
           name={TABS.ClipboardTab}
           component={ClipboardStack}
@@ -118,7 +131,7 @@ const BottomTab = () => {
       {isCustomer && (
         <Tab.Screen
           options={{
-            tabBarIcon: ({focused}) => <TabIcon focused={focused} Icon={focused ? DispatchActiveIcon : DispatchIcon} />,
+            tabBarIcon: ({ focused }) => <TabIcon focused={focused} Icon={focused ? DispatchActiveIcon : DispatchIcon} />,
           }}
           name={TABS.OrdersTab}
           component={OrdersStack}
@@ -127,7 +140,7 @@ const BottomTab = () => {
 
       <Tab.Screen
         options={{
-          tabBarIcon: ({focused}) => <TabIcon focused={focused} Icon={focused ? ProfileActiveIcon : ProfileIcon} />,
+          tabBarIcon: ({ focused }) => <TabIcon focused={focused} Icon={focused ? ProfileActiveIcon : ProfileIcon} />,
         }}
         name={TABS.ProfileTab}
         component={ProfileStack}
@@ -136,7 +149,7 @@ const BottomTab = () => {
   );
 };
 
-const TabIcon = ({Icon, focused}) => {
+const TabIcon = ({ Icon, focused }) => {
   return (
     <View style={globalStyles.tabContainer}>
       <Icon height={22} width={22} />
