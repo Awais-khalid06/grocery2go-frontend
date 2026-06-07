@@ -17,9 +17,13 @@ const GooglePlacesInput = ({
   textInputProps,
   containerStyle,
   listViewStyle,
+  textInputContainerStyle,
+  textInputStyle,
   query: queryOverrides,
   ...otherProps
 }) => {
+  const { style: textInputStyleFromProps, ...restTextInputProps } =
+    textInputProps || {};
   const mergedQuery = {
     key: GOOGLE_API_KEY,
     location: `${region.latitude},${region.longitude}`,
@@ -50,10 +54,10 @@ const GooglePlacesInput = ({
       placeholder={placeholder}
       textInputProps={{
         onChangeText: (text) => console.log("GooglePlacesInput typing:", text),
-        style: styles.textInput,
         selectionColor: COLORS.primary,
         placeholderTextColor: COLORS.textGray,
-        ...textInputProps,
+        ...restTextInputProps,
+        style: [styles.textInput, textInputStyle, textInputStyleFromProps],
       }}
       fetchDetails={true}
       timeout={15000}
@@ -64,8 +68,10 @@ const GooglePlacesInput = ({
       query={mergedQuery}
       styles={{
         container: [styles.container, containerStyle],
-        // textInput: styles.textInput,
-        textInputContainer: styles.textInputContainer,
+        textInputContainer: [
+          styles.textInputContainer,
+          textInputContainerStyle,
+        ],
         listView: [styles.listView, listViewStyle],
         row: {},
         description: styles.listDescription,
