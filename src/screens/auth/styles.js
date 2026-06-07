@@ -1,37 +1,46 @@
-import {StyleSheet} from 'react-native';
-import {COLORS, FONTS} from '../../utils/theme';
-import {hp, isIOS, wp} from '../../helpers';
+import { StyleSheet } from "react-native";
+import { COLORS, FONTS } from "../../utils/theme";
+import { hp, isIOS, wp } from "../../helpers";
 
 export const splashStyles = StyleSheet.create({
-  backgroundImage: {flex: 1, height: hp(110)},
-  logo: {flex: 1, alignItems: 'center', justifyContent: 'center'},
+  backgroundImage: { flex: 1, height: hp(110) },
+  logo: { flex: 1, alignItems: "center", justifyContent: "center" },
 });
 
 export const signUpStyles = StyleSheet.create({
-  headText: {gap: 5},
-  actionButton: {marginTop: 130},
-  bottomContent: {alignSelf: 'center', alignItems: 'center', gap: 15, marginVertical: 40},
-  inputsContainer: {marginTop: 25},
-  socialIcons: {flexDirection: 'row', gap: 15},
-  rememberContainer: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'},
-  checkContainer: {flexDirection: 'row', alignItems: 'center', gap: 5},
+  headText: { gap: 5 },
+  actionButton: { marginTop: 130 },
+  bottomContent: {
+    alignSelf: "center",
+    alignItems: "center",
+    gap: 15,
+    marginVertical: 40,
+  },
+  inputsContainer: { marginTop: 25 },
+  socialIcons: { flexDirection: "row", gap: 15 },
+  rememberContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  checkContainer: { flexDirection: "row", alignItems: "center", gap: 5 },
   phoneInput: {
-    width: '100%',
+    width: "100%",
     height: 45,
     backgroundColor: COLORS.white,
     borderRadius: 10,
-    overflow: 'hidden',
+    overflow: "hidden",
     borderWidth: 1,
     borderColor: COLORS.grey2,
   },
   phoneInputTextInput: {
     color: COLORS.black,
     fontFamily: FONTS.regular,
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
     backgroundColor: COLORS.white,
     includeFontPadding: false,
-    textAlignVertical: 'center',
+    textAlignVertical: "center",
     fontSize: 12,
   },
   phoneInputTextContainer: {
@@ -43,36 +52,51 @@ export const signUpStyles = StyleSheet.create({
     color: COLORS.black,
     fontFamily: FONTS.regular,
     includeFontPadding: false,
-    textAlignVertical: 'center',
+    textAlignVertical: "center",
     fontSize: 12,
   },
-  buttonContainer: {marginTop: 25, alignItems: 'center'},
+  buttonContainer: { marginTop: 25, alignItems: "center" },
   bottomBox: {},
 });
 
 export const accountTypeStyles = StyleSheet.create({
-  logo: {alignSelf: 'center'},
-  accountsContainer: {marginTop: 20, gap: 20},
-  content: {marginBottom: 0},
-  scrollContent: {justifyContent: 'space-between', paddingBottom: 20},
-  subtitle: {marginTop: 8, color: COLORS.textGray},
+  logo: { alignSelf: "center" },
+  accountsContainer: { marginTop: 20, gap: 20 },
+  content: { marginBottom: 0 },
+  scrollContent: { justifyContent: "space-between", paddingBottom: 20 },
+  subtitle: { marginTop: 8, color: COLORS.textGray },
 });
 
 export const onboardingStyles = StyleSheet.create({
-  onBoardContainer: {width: wp(100), alignItems: 'center'},
-  headText: {fontFamily: FONTS.bold, textAlign: 'center', fontSize: 18},
-  headDescription: {textAlign: 'center', color: COLORS.textGray, marginTop: 10},
-  textContainer: {width: '80%', marginTop: 35, alignSelf: 'center'},
+  onBoardContainer: { width: wp(100), alignItems: "center" },
+  headText: { fontFamily: FONTS.bold, textAlign: "center", fontSize: 18 },
+  headDescription: {
+    textAlign: "center",
+    color: COLORS.textGray,
+    marginTop: 10,
+  },
+  textContainer: { width: "80%", marginTop: 35, alignSelf: "center" },
 
-  dotsContainer: {flexDirection: 'row', alignSelf: 'center', gap: 8, marginBottom: 35},
-  dotActive: {width: 38, height: 8, borderRadius: 100},
-  dotInactive: {width: 8, height: 8, borderRadius: 100},
+  dotsContainer: {
+    flexDirection: "row",
+    alignSelf: "center",
+    gap: 8,
+    marginBottom: 35,
+  },
+  dotActive: { width: 38, height: 8, borderRadius: 100 },
+  dotInactive: { width: 8, height: 8, borderRadius: 100 },
 
-  buttonContainer: {width: '90%', alignSelf: 'center', marginVertical: isIOS ? 10 : 30, flexDirection: 'row', justifyContent: 'space-between'},
-  actionButton: {width: '48%'},
-  flatList: {justifyContent: 'center', alignItems: 'center', flexGrow: 1},
-  paginateAndButton: {marginTop: 30, gap: 50},
-  contentContainer: {flex: 1, justifyContent: 'center', paddingTop: '5%'},
+  buttonContainer: {
+    width: "90%",
+    alignSelf: "center",
+    marginVertical: isIOS ? 10 : 30,
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  actionButton: { width: "48%" },
+  flatList: { justifyContent: "center", alignItems: "center", flexGrow: 1 },
+  paginateAndButton: { marginTop: 30, gap: 50 },
+  contentContainer: { flex: 1, justifyContent: "center", paddingTop: "5%" },
 });
 
 export const otpVerifyStyles = StyleSheet.create({
@@ -88,7 +112,7 @@ export const otpVerifyStyles = StyleSheet.create({
     color: COLORS.primary,
     backgroundColor: COLORS.white,
   },
-  buttonContainer: {alignItems: 'center', gap: 20},
+  buttonContainer: { alignItems: "center", gap: 20 },
 });
 
 export const addBankStyles = StyleSheet.create({
@@ -98,10 +122,56 @@ export const addBankStyles = StyleSheet.create({
   },
   wrapper: {
     flex: 1,
-    width: '100%',
+    width: "100%",
   },
   fg1: {
     flexGrow: 1,
+  },
+  errorContainer: {
+    flex: 1,
+    paddingHorizontal: "8%",
+    paddingVertical: 24,
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 16,
+  },
+  errorIconContainer: {
+    width: 92,
+    height: 92,
+    borderRadius: 46,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(255, 45, 8, 0.08)",
+  },
+  errorTitle: {
+    fontFamily: FONTS.semiBold,
+    textAlign: "center",
+  },
+  errorMessage: {
+    textAlign: "center",
+    lineHeight: 18,
+    maxWidth: "90%",
+  },
+  errorHint: {
+    textAlign: "center",
+    lineHeight: 18,
+    maxWidth: "92%",
+  },
+  errorActions: {
+    width: "100%",
+    gap: 12,
+    marginTop: 10,
+  },
+  secondaryButton: {
+    borderWidth: 1,
+    borderColor: COLORS.grey2,
+    backgroundColor: COLORS.white,
+  },
+  secondaryButtonInner: {
+    backgroundColor: "transparent",
+  },
+  secondaryButtonText: {
+    color: COLORS.black,
   },
   webviewStyle: {
     flex: 1,
